@@ -295,7 +295,12 @@ class Paynow{
     return body;
   }
 
+  sendMobile(Payment payment, String phone, String method){
+    this._initMobile(payment, phone, method);
+  }
+
 }
+
 
 
 
@@ -305,7 +310,7 @@ main(){
   Payment payment = paynow.createPayment(DateTime.now().toString(), "user@email.com");
 
   payment.add("Banana", 23.9);
-  
+
   paynow.onDone = (response){
     // Future.delayed(duration);
     print("Checking Transaction Status");
