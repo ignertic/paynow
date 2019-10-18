@@ -4,10 +4,9 @@ library paynow;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
-import 'package:steel_crypt/steel_crypt.dart';
+
 import 'package:http/http.dart' as http;
 // / A Calculator.
 class HashMismatchException implements Exception{
@@ -164,12 +163,22 @@ class Paynow{
 
   String _quotePlus(String value){
     // lazy way
-    return value.replaceAll(":", "%3A").replaceAll("/", "%2F");
+    try{
+      return value.replaceAll(":", "%3A").replaceAll("/", "%2F");
+    }catch(e){
+      this.onError(e);
+      return "";
+    }
   }
 
   String _notQuotePlus(String value){
     // lazy way
-    return value.replaceAll("%3A", ":").replaceAll("%2F", "/");
+    try{
+      return value.replaceAll("%3A", ":").replaceAll("%2F", "/");
+    }on Exception{
+      this.onError(Exception("Transaction Failed"));
+      return "";
+    }
   }
 
   Map<String, dynamic> _rebuildResponse(String qry){
@@ -204,18 +213,21 @@ class Paynow{
     return body;
   }
 
-  Future<StatusResponse> checkTransactionStatus(String pollUrl)async{
+  checkTransactionStatus(String pollUrl)async{
     // POST Request
     var client = http.Client();
 
     try{
-      var response = client.post(pollUrl.replaceAll("%3a", ":").replaceAll("%2f", "/").replaceAll("%3d", "=").replaceAll("%3f", "?"));
-      response.then((res){
-        // print(res.body);
-        StatusResponse data = StatusResponse.fromJson(this._rebuildResponse(res.body));
-        this.onCheck(data);
-
-      });
+      if (pollUrl==null){
+        this.onError(Exception("Transaction Failed"));
+      }else{
+        var response = client.post(pollUrl.replaceAll("%3a", ":").replaceAll("%2f", "/").replaceAll("%3d", "=").replaceAll("%3f", "?"));
+        response.then((res){
+          // print(res.body);
+          StatusResponse data = StatusResponse.fromJson(this._rebuildResponse(res.body));
+          this.onCheck(data);
+        });
+      }
 
     }catch(e){
       this.onError(e);
@@ -230,32 +242,11 @@ class Paynow{
       Map<String, dynamic> data = await _buildMobile(payment, phone, method);
       var client=http.Client();
       client.post(Paynow.URL_INITIATE_MOBILE_TRANSACTION, body: data).then((res){
+
         this.onDone(this._rebuildResponse(res.body));
         client.close();
       });
     }catch(e){this.onError(e);}
-  }
-
-  __hash(Map<String, dynamic> data)async{
-
-  var url = "http://144.202.106.91:8008/parse/${this.integrationKey}";
-
-  try{
-
-    var response = await http.post(url, body: data);
-    if (response.statusCode == 200) {
-      Map<String, dynamic> res = jsonDecode(response.body);
-
-      return res['hash'];
-    } else {
-      print("Request failed with status: ${response.statusCode}.");
-    }
-    return "";
-
-  }catch(e){
-    this.onError(e);
-  }
-
   }
 
   _buildMobile(Payment payment, String phone, String method)async{
@@ -291,7 +282,9 @@ class Paynow{
       out+=body[values[i]];
     }
     out+=this.integrationKey;
-    body["hash"] = await __hash(body);
+    final hash = sha512.convert(utf8.encode(out));
+    body["hash"] = hash.toString().toUpperCase(); //await __hash(body);
+
     return body;
   }
 
@@ -302,27 +295,31 @@ class Paynow{
 }
 
 
-
-
 main(){
   Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
-
   Payment payment = paynow.createPayment(DateTime.now().toString(), "user@email.com");
 
-  payment.add("Banana", 23.9);
+  payment.add("Banana", 15.9);
 
+  paynow.onError = (data){
+    print(data);
+  };
   paynow.onDone = (response){
     // Future.delayed(duration);
-    print("Checking Transaction Status");
+    print("Checking Transacti on Status");
     paynow.checkTransactionStatus(response['pollurl']);
   };
-
 
   paynow.onCheck = (StatusResponse response){
     print(response.reference);
   };
 
-  paynow._initMobile(payment, "0784442662", "ecocash");
+  try{
+    paynow._initMobile(payment, "0784442662", "ecocash");
+
+  }catch(e){
+    print("Client has insufficient funds");
+  }
 
 
 

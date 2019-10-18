@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:argon_buttons_flutter/argon_buttons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:paynow/paynow.dart';
 
 void main() => runApp(MyApp());
@@ -9,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Paynow',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -20,7 +24,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+
       ),
       home: MyHomePage(title: 'Flutter Paynow Demo'),
     );
@@ -46,20 +50,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   String _status = "";
+  List<GCircle> loaders = <GCircle>[];
+  var parser = EmojiParser();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+
+
+  @override
+  void initState(){
+    super.initState();
+    // Timer.periodic(Duration(seconds: 5), (t){_animateLoaders();});
   }
 
   @override
@@ -71,120 +74,221 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      backgroundColor: Colors.indigoAccent,
+
       appBar: AppBar(
+        backgroundColor: Colors.greenAccent.withOpacity(.7),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Ecocash Flutter Demo:',
-            ),
-            TextField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.phone),
-                hintText: "Phone Number"
-              ),
-              keyboardType: TextInputType.phone,
-              controller: _phoneController,
-
-            ),
-            TextField(
-              decoration: InputDecoration(
-                hintText: "5.00",
-                icon: Icon(Icons.monetization_on)
-              ),
-              keyboardType: TextInputType.number,
-              controller: _amountController,
-
-            ),
-            ArgonTimerButton(
-              height: 50,
-              width: MediaQuery.of(context).size.width * 0.45,
-              minWidth: MediaQuery.of(context).size.width * 0.30,
-              highlightColor: Colors.transparent,
-              highlightElevation: 0,
-              roundLoadingShape: false,
-              onTap: (startTimer, btnState) {
-                if (btnState == ButtonState.Idle) {
-                  startTimer(15);
-                }
-
-                Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
-
-                Payment payment = paynow.createPayment(DateTime.now().toString(), "user@email.com");
-
-                payment.add("Banana", double.parse(_amountController.text));
-
-                paynow.onDone = (response){
-                  // Future.delayed(duration);
-                  print("Checking Transaction Status");
-                  paynow.checkTransactionStatus(response['pollurl']);
-                };
-
-
-                paynow.onCheck = (StatusResponse response){
-                  setState(() {
-                      _status = response.status;
-                  });
-                };
-
-                paynow.sendMobile(payment, _phoneController.text, "ecocash");
-              },
-              // initialTimer: 10,
-              child: Text(
-                "PAY",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700),
-              ),
-              loader: (timeLeft) {
-                return Text(
-                  "Wait | $timeLeft",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700),
-                );
-              },
-              borderRadius: 5.0,
-              color: Colors.transparent,
-              elevation: 0,
-              borderSide: BorderSide(color: Colors.black, width: 1.5),
-            ),
-            SizedBox(height: 10,),
-            Row(
+      body:Stack(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 20, left: 20),
+            child: Container(
+              color: Colors.greenAccent.withOpacity(.5),
+              child:Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: Column(
+              // Column is also a layout widget. It takes a list of children and
+              // arranges them vertically. By default, it sizes itself to fit its
+              // children horizontally, and tries to be as tall as its parent.
+              //
+              // Invoke "debug painting" (press "p" in the console, choose the
+              // "Toggle Debug Paint" action from the Flutter Inspector in Android
+              // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+              // to see the wireframe for each widget.
+              //
+              // Column has various properties to control how it sizes itself and
+              // how it positions its children. Here we use mainAxisAlignment to
+              // center the children vertically; the main axis here is the vertical
+              // axis because Columns are vertical (the cross axis would be
+              // horizontal).
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text("Transaction  Details", style: TextStyle(color: Colors.blue)),
+                Text(
+                  'Ecocash Flutter Demo:',
+                  style: TextStyle(
+                    color: Colors.white
+                  ),
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.phone),
+                    hintText: "Phone Number",
+                    hintStyle: TextStyle(
+                      color: Colors.white
+                    )
+                  ),
+                  cursorColor:Colors.white ,
+                  keyboardType: TextInputType.phone,
+                  controller: _phoneController,
 
-                Text(_status, style: TextStyle(color: Colors.green, fontSize: 49),)
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: "5.00",
+                    hintStyle: TextStyle(color:Colors.white),
+                    icon: Icon(Icons.monetization_on)
+                  ),
+                  keyboardType: TextInputType.number,
+                  controller: _amountController,
+
+                ),
+                SizedBox(height: 15,),
+                ArgonTimerButton(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  minWidth: MediaQuery.of(context).size.width * 0.30,
+                  highlightColor: Colors.transparent,
+                  highlightElevation: 0,
+                  roundLoadingShape: false,
+                  onTap: (startTimer, btnState) {
+                    if (btnState == ButtonState.Idle) {
+                      startTimer(15);
+                    }
+
+                    // this._animateLoaders();
+
+                    Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
+
+                    Payment payment = paynow.createPayment(DateTime.now().toString(), "user@email.com");
+
+                    payment.add("Banana", double.parse(_amountController.text));
+
+                    paynow.onDone = (response){
+                      // Future.delayed(duration);
+                      print("Checking Transaction Status");
+                      paynow.checkTransactionStatus(response['pollurl']);
+                    };
+
+                    paynow.onCheck = (StatusResponse response){
+                      setState(() {
+                          _status = response.paid;
+                      });
+                    };
+
+                    paynow.sendMobile(payment, _phoneController.text, "ecocash");
+                  },
+                  // initialTimer: 10,
+                  child: Text(
+                    "PAY",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  loader: (timeLeft) {
+                    return Text(
+                      "Wait | $timeLeft",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700),
+                    );
+                  },
+                  borderRadius: 5.0,
+                  color: Colors.greenAccent ,
+                  elevation: 0,
+                  borderSide: BorderSide(color: Colors.black, width: 1.5),
+                ),
+                SizedBox(height: 10,),
+                Row(
+                  children: <Widget>[
+                    // Text("Transaction  Data", style: TextStyle(color:
+                    // Colors.blue)),
+                    Text("If you like this API, feel free to DONATE!!",
+                    textAlign: TextAlign.center,
+                     style:TextStyle(
+
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white
+                    )),
+                    Text(_status, style: TextStyle(color: Colors.green, fontSize: 49),)
+                    ,Text("${parser.get('coffee').code} <SuperCode/>")
+                  ],
+                )
+
               ],
-            )
-
-          ],
-        ),
-      ),
+            ),
+          ))),
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              children: _buildLoaders()
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerRight,
+            child: Column(
+              children: _buildLoaders()
+            ),
+          )
+        ]
+      ) ,
        // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  List<GCircle>_buildLoaders() {
+    this.loaders.clear();
+    for(int i=0;i<3;i++){
+      this.loaders.add(
+        GCircle(Colors.black)
+      );
+
+    }
+    return loaders;
+  }
+
+
+}
+
+
+class GCircle extends StatefulWidget{
+  Color color;
+  GCircle(this.color);
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _GCircle();
+  }
+
+  updateColor(Color color){
+    this.color = color;
+  }
+
+}
+
+class _GCircle extends State<GCircle>{
+
+Color c = Colors.black87;
+  @override
+  void initState(){
+    List<Color> colors = [Colors.black , Colors.greenAccent, Colors.cyan];
+    Random random = Random();
+    Timer.periodic(Duration(seconds: 2), (t){
+      setState(() {
+        this.c = colors[random.nextInt(colors.length)];
+      });
+    });
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      child: Padding(
+        padding: EdgeInsets.all(5),
+        child: CircleAvatar(
+          backgroundColor: c,
+        ),
+      )
+    );
+  }
+
+
+
 }

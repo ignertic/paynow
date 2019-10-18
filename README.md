@@ -1,14 +1,47 @@
 # paynow
 
-A new Flutter package project.
+This is an unofficial flutter package for [Paynow](https://paynow.co.zw)
 
 ## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+```
+Paynow paynow = Paynow(integrationKey: "XXXX-XXXXX-XXXXX-XXXX", integrationId: "1234", returnUrl: "http://google.com", resultUrl: "http://google.com");
+Payment payment = paynow.createPayment(DateTime.now().toString(), "user@email.com");
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+// add item to cart
+payment.add("Banana", 15.9);
+
+// error callback
+paynow.onError = (data){
+  print(data);
+};
+
+// set Transaction check callback
+paynow.onCheck = (StatusResponse response){
+  print(response.reference);
+};
+
+// transaction callback
+paynow.onDone = (response){
+  print("Checking Transaction Status");
+  paynow.checkTransactionStatus(response['pollurl']);
+};
+
+try{
+  // initiate mobile payment
+  paynow._initMobile(payment, "0784442662", "ecocash");
+}catch(e){
+  print("Client has insufficient funds");
+}
+
+```
+
+## NOTE
+It's not yet perfect but it works, try out the example.
+
+
+
+All contributions and PRs are welcome :) AND don't be shy to open issues.
+
+
+[SuperCode](https://ignertic.github.io)
