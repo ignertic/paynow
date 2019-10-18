@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     // this._animateLoaders();
 
-                    Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
+                    Paynow paynow = Paynow(integrationKey: "ZZZZZZZZZZZZZZZZZ", integrationId: "XXXXXXXXXXXXXXXXXXXXXXXXXX", returnUrl: "http://google.com", resultUrl: "http://google.co");
 
                     Payment payment = paynow.createPayment(DateTime.now().toString(), "user@email.com");
 
