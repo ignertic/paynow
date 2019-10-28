@@ -41,7 +41,7 @@ print(status.paid);
 ```
 
 ## NOTE
-It's not yet perfect but it works, try out the example.
+This package is now in BETA and has breaking changes. Refer to docs
 
 
 
