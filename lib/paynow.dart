@@ -4,7 +4,10 @@ library paynow;
 import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:paynow/webview.dart';
 
 class HashMismatchException implements Exception{
   String cause;
@@ -74,7 +77,8 @@ class InitResponse{
       hash: data['hash'],
       hasRedirect: data['browserurl'] != null,
       redirectUrl: data['browserurl'],
-      instructions: data['instructions']
+      instructions: data['instructions'],
+      pollUrl: Paynow.notQuotePlus(data['pollUrl'])
     );
   }
 }
@@ -174,14 +178,10 @@ class Paynow{
     }
   }
 
-  String _notQuotePlus(String value){
+  static String notQuotePlus(String value){
     // lazy way
-    try{
-      return value.replaceAll("%3A", ":").replaceAll("%2F", "/");
-    }on Exception{
-      this.onError(Exception("Transaction Failed"));
-      return "";
-    }
+    return value.replaceAll("%3A", ":").replaceAll("%2F", "/");
+
   }
 
   Map<String, dynamic> _rebuildResponse(String qry){
@@ -303,8 +303,24 @@ class Paynow{
     return this._initMobile(payment, phone, method);
   }
 
+  void loadWebView(BuildContext context, String url)async{
+    Navigator.push(context, MaterialPageRoute(
+      builder: ((context)=>WebViewContainer(url))
+    ));
+  }
+
+  void loadWeb(Future<InitResponse> data){
+    data
+    ..then((res){
+      if (res.pollUrl)
+    })
+  }
+
   Future<InitResponse> send(Payment payment){
-    return this._init(payment);
+
+     Future<InitResponse> data = this._init(payment);
+     loadWeb(data);
+     return data;
   }
 
 }
