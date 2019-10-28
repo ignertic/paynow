@@ -15,33 +15,35 @@ payment.add("Banana", 1.9);
 paynow.send(payment)
 ..then((InitResponse response){
 
-// display results
-print(response());
+  // display results
+  print(response());
 
-// Check Transaction status from pollUrl
-paynow.checkTransactionStatus(response.pollUrl)
-..then((StatusResponse status){
-print(status.paid);
-});
+  // Check Transaction status from pollUrl
+  paynow.checkTransactionStatus(response.pollUrl)
+  ..then((StatusResponse status){
+    print(status.paid);
+  });
 });
 
 
 paynow.sendMobile(payment, "0784442662", "ecocash")
 ..then((InitResponse response){
-// display results
-print(response());
+  // display results
+  print(response());
 
-// Check Transaction status from pollUrl
-paynow.checkTransactionStatus(response.pollUrl)
-..then((StatusResponse status){
-print(status.paid);
-});
+  // Check Transaction status from pollUrl
+  paynow.checkTransactionStatus(response.pollUrl)
+  ..then((StatusResponse status){
+    print(status.paid);
+  });
 });
 
 ```
 
-## NOTE
-This package is now in BETA and has breaking changes. Refer to docs
+To use this plugin on iOS you need to opt-in for the embedded views preview by adding a boolean property to the app's Info.plist file, with the key io.flutter.embedded_views_preview and the value YES.
+
+
+
 
 
 
