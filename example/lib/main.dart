@@ -150,29 +150,28 @@ class _MyHomePageState extends State<MyHomePage> {
                       startTimer(15);
                     }
 
-                    // this._animateLoaders();
 
-                    Paynow paynow = Paynow(integrationKey: "ZZZZZZZZZZZZZZZZZ", integrationId: "XXXXXXXXXXXXXXXXXXXXXXXXXX", returnUrl: "http://google.com", resultUrl: "http://google.co");
 
-                    Payment payment = paynow.createPayment(DateTime.now().toString(), "user@email.com");
+                    Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
+                    Payment payment = paynow.createPayment("user", "user@email.com");
 
-                    payment.add("Banana", double.parse(_amountController.text));
+                    payment.add("Banana", 1.9);
 
-                    paynow.onDone = (response){
-                      // Future.delayed(duration);
-                      print("Checking Transaction Status");
-                      paynow.checkTransactionStatus(response['pollurl']);
-                    };
 
-                    paynow.onCheck = (StatusResponse response){
-                      setState(() {
-                          _status = response.paid;
+                    // Initiate Mobile Payment
+                    paynow.sendMobile(payment, "0784442662", "ecocash")
+                      ..then((InitResponse response){
+                        // display results
+                        print(response());
+
+                        // Check Transaction status from pollUrl
+                        paynow.checkTransactionStatus(response.pollUrl)
+                          ..then((StatusResponse status){
+                            print(status.paid);
+                          });
                       });
-                    };
-
-                    paynow.sendMobile(payment, _phoneController.text, "ecocash");
                   },
-                  // initialTimer: 10,
+
                   child: Text(
                     "PAY",
                     style: TextStyle(
