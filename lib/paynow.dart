@@ -130,11 +130,11 @@ class Paynow{
   static const String URL_INITIATE_TRANSACTION = "https://www.paynow.co.zw/interface/initiatetransaction";
   static const String URL_INITIATE_MOBILE_TRANSACTION = "https://www.paynow.co.zw/interface/remotetransaction";
 
-  String integrationId;
+  final String integrationId;
 
-  String integrationKey;
+  final String integrationKey;
 
-  String returnUrl;
+  final String returnUrl;
 
   Function onError;
 
@@ -142,9 +142,11 @@ class Paynow{
 
   Function onDone;
 
-  String resultUrl;
+  final String resultUrl;
 
-  Paynow({this.integrationId, this.integrationKey, this.returnUrl, this.resultUrl});
+  BuildContext context;
+
+  Paynow({this.integrationId, this.integrationKey, this.returnUrl, this.resultUrl, this.context});
 
   Payment createPayment(String reference, String authEmail){
 
@@ -312,8 +314,10 @@ class Paynow{
   void loadWeb(Future<InitResponse> data){
     data
     ..then((res){
-      if (res.pollUrl)
-    })
+      if (res.pollUrl!=null){
+          this.loadWebView(this.context, res.pollUrl);
+      }
+    });
   }
 
   Future<InitResponse> send(Payment payment){

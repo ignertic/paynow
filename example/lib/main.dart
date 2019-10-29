@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-                    Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
+                    Paynow paynow = Paynow(context : context, integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
                     Payment payment = paynow.createPayment("user", "user@email.com");
 
                     payment.add("Banana", 1.9);
@@ -170,6 +170,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             print(status.paid);
                           });
                       });
+
+
+                      //inittate the other
+                      paynow.send(payment);
                   },
 
                   child: Text(
