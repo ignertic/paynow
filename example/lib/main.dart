@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Ecocash Flutter Demo:',
+                  'Flutter Auto Webview',
                   style: TextStyle(
                     color: Colors.white
                   ),
@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextField(
                   decoration: InputDecoration(
                     icon: Icon(Icons.phone),
-                    hintText: "Phone Number",
+                    hintText: "Your Email",
                     hintStyle: TextStyle(
                       color: Colors.white
                     )
@@ -153,28 +153,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-                    Paynow paynow = Paynow(context : context, integrationKey: INTEGRATION_KEY, integrationId: INTEGRATION_ID, returnUrl: "http://google.com", resultUrl: "http://google.co");
-                    Payment payment = paynow.createPayment("user", "user@email.com");
+                    Paynow paynow = Paynow(context: context, integrationKey: INTEGRATION_KEY, integrationId: INTEGRATION_ID, returnUrl: "http://google.com", resultUrl: "http://google.co");
+                    Payment payment = paynow.createPayment("donate", _phoneController.text ??  "pyzimos@gmail.com");
 
                     payment.add("Banana", 1.9);
 
 
-                    // Initiate Mobile Payment
-                    // paynow.sendMobile(payment, "0784442662", "ecocash")
-                    //   ..then((InitResponse response){
-                    //     // display results
-                    //     print(response());
-                    //
-                    //     // Check Transaction status from pollUrl
-                    //     paynow.checkTransactionStatus(response.pollUrl)
-                    //       ..then((StatusResponse status){
-                    //         print(status.paid);
-                    //       });
-                    //   });
-
-
-                      //inittate the other
-                      paynow.send(payment);
+                    // Initiate Payment
+                    paynow.send(payment);
                   },
 
                   child: Text(
