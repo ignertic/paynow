@@ -2,6 +2,8 @@
 
 This is an unofficial flutter package for [Paynow](https://paynow.co.zw)
 
+![Demo](demo.gif)
+
 ## Getting Started
 
 ```
