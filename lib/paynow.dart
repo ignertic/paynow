@@ -78,7 +78,7 @@ class InitResponse{
       hasRedirect: data['browserurl'] != null,
       redirectUrl: data['browserurl'],
       instructions: data['instructions'],
-      pollUrl: Paynow.notQuotePlus(data['pollUrl'])
+      pollUrl: data['pollUrl']
     );
   }
 }
@@ -314,8 +314,9 @@ class Paynow{
   void loadWeb(Future<InitResponse> data){
     data
     ..then((res){
-      if (res.pollUrl!=null){
-          this.loadWebView(this.context, res.pollUrl);
+      print("attempt");
+      if (res.redirectUrl!=null){
+          this.loadWebView(this.context, res.redirectUrl);
       }
     });
   }
