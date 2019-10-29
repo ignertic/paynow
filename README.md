@@ -21,15 +21,12 @@ payment.add("Banana", 1.9);
 ```
 Using this method requires that you cross check your ```resultUrl``` and ```returnUrl``` are correct as an error might inconvenience your users.
 
-A webview will be lauched when the redirect link from paynow is ready after calling ```paynow.send```. The package [webview_flutter](https://pub.dev?q=webview_flutter)
+A webview will be lauched when the redirect link from paynow is ready after calling ```paynow.send```. The package [webview_flutter](https://pub.dev?q=webview_flutter) which means this will work both iOS and Android.
 
 
 
 ## For iOS  
 To use this plugin on iOS you need to opt-in for the embedded views preview by adding a boolean property to the app's Info.plist file, with the key io.flutter.embedded_views_preview and the value YES.
-
-
-
 
 
 
