@@ -182,7 +182,7 @@ class Paynow{
 
   static String notQuotePlus(String value){
     // lazy way
-    return value.replaceAll("%3A", ":").replaceAll("%2F", "/");
+    return value.replaceAll("%3A", ":").replaceAll("%2F", "/").replaceAll("%3a", ":").replaceAll("%2f", "/").replaceAll("%3f", "?").replaceAll("%3d", "=");
 
   }
 
@@ -307,14 +307,14 @@ class Paynow{
 
   void loadWebView(BuildContext context, String url)async{
     Navigator.push(context, MaterialPageRoute(
-      builder: ((context)=>WebViewContainer(url))
+      builder: ((context)=>WebViewContainer(Paynow.notQuotePlus(url)))
     ));
   }
 
   void loadWeb(Future<InitResponse> data){
     data
     ..then((res){
-      print("attempt");
+
       if (res.redirectUrl!=null){
           this.loadWebView(this.context, res.redirectUrl);
       }
