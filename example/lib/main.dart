@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     )
                   ),
                   cursorColor:Colors.white ,
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.emailAddress,
                   controller: _phoneController,
 
                 ),
