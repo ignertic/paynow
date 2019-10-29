@@ -22,7 +22,7 @@ class StatusResponse{
 
   String status;
 
-  double amount;
+  var amount;
 
   String reference;
 
@@ -35,7 +35,7 @@ class StatusResponse{
     return StatusResponse(
       paid: data['paid'],
       status: data['status'],
-      amount: double.parse(data['amount']),
+      amount: data['amount'],
       reference: data['reference'],
       hash: data['hash']
     );
@@ -74,7 +74,8 @@ class InitResponse{
       hash: data['hash'],
       hasRedirect: data['browserurl'] != null,
       redirectUrl: data['browserurl'],
-      instructions: data['instructions']
+      instructions: data['instructions'],
+      pollUrl: data['pollurl']
     );
   }
 }
@@ -174,14 +175,10 @@ class Paynow{
     }
   }
 
-  String _notQuotePlus(String value){
+  static String notQuotePlus(String value){
     // lazy way
-    try{
-      return value.replaceAll("%3A", ":").replaceAll("%2F", "/");
-    }on Exception{
-      this.onError(Exception("Transaction Failed"));
-      return "";
-    }
+    return value.replaceAll("%3A", ":").replaceAll("%2F", "/").replaceAll("%3a", ":").replaceAll("%2f", "/").replaceAll("%3f", "?").replaceAll("%3d", "=");
+
   }
 
   Map<String, dynamic> _rebuildResponse(String qry){
@@ -311,7 +308,7 @@ class Paynow{
 
 
 main(){
-  Paynow paynow = Paynow(integrationKey: "XXXXXXXXXXXXXXXXXXX", integrationId: "XXXXXXX", returnUrl: "http://google.com", resultUrl: "http://google.co");
+  Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
   Payment payment = paynow.createPayment("user", "user@email.com");
 
   payment.add("Banana", 1.9);
@@ -325,23 +322,27 @@ main(){
     print(response());
 
     // Check Transaction status from pollUrl
-    paynow.checkTransactionStatus(response.pollUrl)
+    String url = Paynow.notQuotePlus(response.pollUrl);
+    print(Paynow.notQuotePlus(response.pollUrl));
+    paynow.checkTransactionStatus(url)
     ..then((StatusResponse status){
       print(status.paid);
+      print(status.reference);
+      print(status.status);
     });
   });
 
 
-  paynow.sendMobile(payment, "0784442662", "ecocash")
-    ..then((InitResponse response){
-      // display results
-      print(response());
-
-      // Check Transaction status from pollUrl
-      paynow.checkTransactionStatus(response.pollUrl)
-        ..then((StatusResponse status){
-          print(status.paid);
-        });
-    });
+  // paynow.sendMobile(payment, "0784442662", "ecocash")
+  //   ..then((InitResponse response){
+  //     // display results
+  //     print(response());
+  //
+  //     // Check Transaction status from pollUrl
+  //     paynow.checkTransactionStatus(response.pollUrl)
+  //       ..then((StatusResponse status){
+  //         print(status.paid);
+  //       });
+  //   });
 
 }
