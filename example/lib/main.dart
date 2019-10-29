@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:argon_buttons_flutter/argon_buttons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
+import 'package:paynow/keys.dart';
 import 'package:paynow/paynow.dart';
 
 void main() => runApp(MyApp());
@@ -152,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-                    Paynow paynow = Paynow(context : context, integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
+                    Paynow paynow = Paynow(context : context, integrationKey: INTEGRATION_KEY, integrationId: INTEGRATION_ID, returnUrl: "http://google.com", resultUrl: "http://google.co");
                     Payment payment = paynow.createPayment("user", "user@email.com");
 
                     payment.add("Banana", 1.9);
