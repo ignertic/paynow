@@ -333,16 +333,16 @@ main(){
   });
 
 
-  // paynow.sendMobile(payment, "0784442662", "ecocash")
-  //   ..then((InitResponse response){
-  //     // display results
-  //     print(response());
-  //
-  //     // Check Transaction status from pollUrl
-  //     paynow.checkTransactionStatus(response.pollUrl)
-  //       ..then((StatusResponse status){
-  //         print(status.paid);
-  //       });
-  //   });
+   paynow.sendMobile(payment, "0784442662", "ecocash")
+     ..then((InitResponse response){
+       // display results
+       print(response());
+
+       // Check Transaction status from pollUrl
+       paynow.checkTransactionStatus(response.pollUrl)
+         ..then((StatusResponse status){
+           print(status.paid);
+         });
+     });
 
 }
