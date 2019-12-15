@@ -82,6 +82,17 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+      persistentFooterButtons: <Widget>[
+        RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(40))
+          ),
+          child: Text("MORE"),
+          onPressed: (){
+            // open showcase dialog
+
+          }),
+      ],
       body:Stack(
         children: <Widget>[
           Padding(
@@ -159,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
                     // Initiate Mobile Payment
-                    paynow.sendMobile(payment, "0784442662", "ecocash")
+                    paynow.sendMobile(payment, _phoneController.text ?? "0784442662", "ecocash")
                       ..then((InitResponse response){
                         // display results
                         print(response());
