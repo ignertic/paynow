@@ -18,7 +18,7 @@ class ValueError implements Exception{
 
 class StatusResponse{
 
-  String paid;
+  bool paid;
 
   String status;
 
@@ -33,7 +33,7 @@ class StatusResponse{
   static fromJson(Map<String, dynamic> data){
 
     return StatusResponse(
-      paid: data['paid'],
+      paid: data['paid']=="paid",
       status: data['status'],
       amount: data['amount'],
       reference: data['reference'],
@@ -60,7 +60,7 @@ class InitResponse{
 
   InitResponse({this.redirectUrl, this.hasRedirect, this.pollUrl, this.error, this.success, this.hash, this.instructions});
 
-  call(){
+  Map<String, dynamic> call(){
     Map<String, dynamic> data = {"redirect" : this.redirectUrl, "hasRedirect" : this.hasRedirect,"pollUrl" : this.pollUrl,"error" : this.error,"success" : this.success,"hash" : this.hash, "instructions" : this.instructions};
     // TODO:/// Refactor
     return data;
@@ -308,41 +308,5 @@ class Paynow{
 
 
 main(){
-  Paynow paynow = Paynow(integrationKey: "960ad10a-fc0c-403b-af14-e9520a50fbf4", integrationId: "6054", returnUrl: "http://google.com", resultUrl: "http://google.co");
-  Payment payment = paynow.createPayment("user", "user@email.com");
-
-  payment.add("Banana", 1.9);
-
-
-  // Initiate Paynow Transaction
-  paynow.send(payment)
-  ..then((InitResponse response){
-
-    // display results
-    print(response());
-
-    // Check Transaction status from pollUrl
-    String url = Paynow.notQuotePlus(response.pollUrl);
-    print(Paynow.notQuotePlus(response.pollUrl));
-    paynow.checkTransactionStatus(url)
-    ..then((StatusResponse status){
-      print(status.paid);
-      print(status.reference);
-      print(status.status);
-    });
-  });
-
-
-   paynow.sendMobile(payment, "0784442662", "ecocash")
-     ..then((InitResponse response){
-       // display results
-       print(response());
-
-       // Check Transaction status from pollUrl
-       paynow.checkTransactionStatus(response.pollUrl)
-         ..then((StatusResponse status){
-           print(status.paid);
-         });
-     });
-
+  
 }
