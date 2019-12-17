@@ -68,6 +68,7 @@ class InitResponse{
 
 
   static fromJson(Map<String, dynamic> data){
+    
     return InitResponse(
       success: data['status']!="error",
       error: data['error'].toString().toLowerCase(),
@@ -308,5 +309,5 @@ class Paynow{
 
 
 main(){
-  
+
 }
