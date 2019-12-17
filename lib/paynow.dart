@@ -68,7 +68,7 @@ class InitResponse{
 
 
   static fromJson(Map<String, dynamic> data){
-    
+
     return InitResponse(
       success: data['status']!="error",
       error: data['error'].toString().toLowerCase(),
@@ -76,7 +76,7 @@ class InitResponse{
       hasRedirect: data['browserurl'] != null,
       redirectUrl: data['browserurl'],
       instructions: data['instructions'],
-      pollUrl: data['pollurl']
+      pollUrl: Paynow.notQuotePlus(data['pollurl'])
     );
   }
 }
