@@ -7,29 +7,36 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
 class HashMismatchException implements Exception{
-  String cause;
+  final String cause;
   HashMismatchException(this.cause);
 }
 
 class ValueError implements Exception{
-  String cause;
+
+  final String cause;
   ValueError(this.cause);
 }
 
 class StatusResponse{
 
+  /// Boolean value indication whether the transaction was paid or not.
   bool paid;
 
+  /// The status of the transaction in Paynow.
   String status;
 
+  /// The total amount of the transaction.
   var amount;
 
+  /// The unique identifier for the transaction.
   String reference;
 
+  /// The unique identifier for the transaction.
   String hash;
 
   StatusResponse({this.paid, this.status,this.amount,this.reference, this.hash});
 
+  /// Return [StatusResponse] from json.
   static fromJson(Map<String, dynamic> data){
 
     return StatusResponse(
@@ -44,19 +51,26 @@ class StatusResponse{
 
 
 class InitResponse{
-  bool success;
+  /// Boolean indicating whether initiate request was successful or not.
+  final bool success;
 
-  String instructions;
+  /// Instruction for transcation status.
+  final String instructions;
 
-  bool hasRedirect;
+  /// Boolean indicating whether the response contains a url to redirect to
+  final bool hasRedirect;
 
-  String hash;
+  /// Transaction Hash
+  final String hash;
 
-  String redirectUrl;
+  /// The url the user should be taken to so they can make a payment
+  final String redirectUrl;
 
-  String error;
+  /// Error String
+  final String error;
 
-  String pollUrl;
+  /// The poll URL sent from Paynow
+  final String pollUrl;
 
   InitResponse({this.redirectUrl, this.hasRedirect, this.pollUrl, this.error, this.success, this.hash, this.instructions});
 
@@ -66,7 +80,7 @@ class InitResponse{
     return data;
   }
 
-
+  /// Returns [InitResponse]
   static fromJson(Map<String, dynamic> data){
 
     return InitResponse(
@@ -83,16 +97,17 @@ class InitResponse{
 
 
 class Payment{
-  String reference;
 
+  /// The unique identifier for the transaction.
+  final String reference;
+
+  /// Cart Items.
   List<Map<String, dynamic>> items=[];
 
-  String authEmail;
+  /// The user's email address.
+  final String authEmail;
 
-  Payment({String reference, String authEmail}){
-    this.authEmail=authEmail;
-    this.reference = reference;
-  }
+  Payment({this.reference, this.authEmail});
 
   Payment add(String title, double amount){
 
@@ -101,6 +116,7 @@ class Payment{
     return this;
   }
 
+  /// Return Info of items in cart.
   String info(){
     String out = "";
     for (int i=0; i<this.items.length;i++){
@@ -111,6 +127,7 @@ class Payment{
     return out;
   }
 
+  /// Total amount of items in cart.
   double total(){
     double total=0.0;
 
@@ -123,27 +140,41 @@ class Payment{
   }
 }
 
-
+/// Contains helper methods to interact with the Paynow API.
+///
+///  Attributes:
+///  integrationId : Merchant's integration id.
+///  integrationKey :  Merchant's integration key.
+///  returnUrl :  Merchant's return url.
+///  resultUrl :  Merchant's result url.
+///
+///  Args:
+///   integrationId : Merchant's integration id. (You can generate this in your merchant dashboard).
+///   integrationKey :  Merchant's integration key.
+///   returnUrl :  Merchant's return url.
+///   resultUrl:  Merchant's result url.
 class Paynow{
+  /// Transaction initation url (constant).
   static const String URL_INITIATE_TRANSACTION = "https://www.paynow.co.zw/interface/initiatetransaction";
+  /// Transaction initation url (constant)
   static const String URL_INITIATE_MOBILE_TRANSACTION = "https://www.paynow.co.zw/interface/remotetransaction";
 
+  ///  Merchant's integration Id.
   String integrationId;
 
+  /// Merchant's Key.
   String integrationKey;
 
+  /// Merchant Return Url.
   String returnUrl;
 
-  Function onError;
-
-  Function onCheck;
-
-  Function onDone;
-
+  ///  Merchant's Result Url.
   String resultUrl;
 
   Paynow({this.integrationId, this.integrationKey, this.returnUrl, this.resultUrl});
 
+
+  /// Create Payment - Returns [Payment]
   Payment createPayment(String reference, String authEmail){
 
     return Payment(reference: reference, authEmail: authEmail);
@@ -171,7 +202,6 @@ class Paynow{
     try{
       return value.replaceAll(":", "%3A").replaceAll("/", "%2F");
     }catch(e){
-      this.onError(e);
       return "";
     }
   }
@@ -222,7 +252,9 @@ class Paynow{
     return body;
   }
 
-
+  /// Check Transaction Status
+  ///
+  /// Returns [StatusResponse]
   Future<StatusResponse> checkTransactionStatus(String pollUrl)async{
 
 

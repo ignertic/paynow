@@ -1,8 +1,8 @@
 name: paynow
-description: A new Flutter package project.
-version: 1.0.3
+description: Paynow Client helper package.
+version: 1.0.4
 author: Gishobert (SuperCode) Gwenzi
-email: pyzimos@gmail.com
+email: iamsupercode@outlook.com
 homepage: https://github.com/ignertic/paynow
 
 environment:
