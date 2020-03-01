@@ -329,7 +329,7 @@ class Paynow{
     return sha512.convert(utf8.encode(string)).toString().toUpperCase();
   }
 
-  Future<InitResponse> sendMobile(Payment payment, String phone, String method){
+  Future<InitResponse> sendMobile(Payment payment, String phone, {String method = "ecocash"}){
     return this._initMobile(payment, phone, method);
   }
 
