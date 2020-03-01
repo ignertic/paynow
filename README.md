@@ -1,6 +1,16 @@
 # paynow
 
-This is an unofficial flutter package for [Paynow](https://paynow.co.zw)
+Installing in pubspec.yaml
+```
+  dependencies:
+  flutter:
+    sdk: flutter
+
+  carousel_pro:
+    git:
+      url: git://github.com/jlouage/flutter-carousel-pro.git
+      ref: master
+```
 
 ![Demo](demo.gif)
 
