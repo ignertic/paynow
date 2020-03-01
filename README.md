@@ -6,10 +6,10 @@ Installing in pubspec.yaml
   flutter:
     sdk: flutter
 
-  carousel_pro:
+  paynow:
     git:
-      url: git://github.com/jlouage/flutter-carousel-pro.git
-      ref: master
+      url: git://github.com/ignertic/paynow.git
+      ref: autowebview
 ```
 
 ![Demo](demo.gif)
