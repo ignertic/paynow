@@ -90,7 +90,7 @@ class InitResponse{
       hasRedirect: data['browserurl'] != null,
       redirectUrl: data['browserurl'],
       instructions: data['instructions'],
-      pollUrl: data['pollurl']==null ? Paynow.notQuotePlus(data['pollurl']) : ""
+      pollUrl: data['pollurl']==null ? "" :Paynow.notQuotePlus(data['pollurl'])
     );
   }
 }
