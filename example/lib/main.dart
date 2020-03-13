@@ -170,11 +170,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
                     // Initiate Mobile Payment
-                    paynow.sendMobile(payment, _phoneController.text ?? "0784442662", "ecocash")
+                    paynow.sendMobile(payment, _phoneController.text ?? "0784442662",)
                       ..then((InitResponse response){
                         // display results
                         print(response());
-
+                        Future.delayed(Duration(seconds: 20~/2));
                         // Check Transaction status from pollUrl
                         paynow.checkTransactionStatus(response.pollUrl)
                           ..then((StatusResponse status){
