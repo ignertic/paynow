@@ -180,6 +180,13 @@ class Paynow{
     return Payment(reference: reference, authEmail: authEmail);
   }
 
+  void setResultUrl(String url){
+    this.resultUrl = url;
+  }
+
+  void setReturnUrl(String url){
+    this.returnUrl = url;
+  }
 
 
   Future<InitResponse> _init(Payment payment)async{
