@@ -62,7 +62,6 @@ class CartModel extends ChangeNotifier {
 
   /// Adds [item] to cart. This is the only way to modify the cart from outside.
   void add(Item item) {
-//    _itemIds.add(item.id);
     this._payment.add(item.name, item.price);
     // This line tells [Model] that it should rebuild the widgets that
     // depend on it.

@@ -11,16 +11,15 @@ class MyCatalog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          _MyAppBar(),
-          SliverToBoxAdapter(child: SizedBox(height: 12)),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-                (context, index) => _MyListItem(index)),
-          ),
-        ],
+      appBar: AppBar(
+        title: Text('CART'),
+
       ),
+      body: ListView.builder(
+          itemCount: 10,
+          itemBuilder: (context, index){
+        return _MyListItem(index);
+      }),
     );
   }
 }
@@ -71,27 +70,9 @@ class _MyListItem extends StatelessWidget {
     var item = catalog.getByPosition(index);
     var textTheme = Theme.of(context).textTheme.headline6;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: LimitedBox(
-        maxHeight: 48,
-        child: Row(
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                color: item.color,
-              ),
-            ),
-            SizedBox(width: 24),
-            Expanded(
-              child: Text(item.name, style: textTheme),
-            ),
-            SizedBox(width: 24),
-            _AddButton(item: item),
-          ],
-        ),
-      ),
+    return ListTile(
+      title: Text(item.name),
+      trailing: _AddButton(item: item)
     );
   }
 }
