@@ -108,10 +108,6 @@ The `InitResponse` response from Paynow will contain various information includi
 ## Poll the transaction to check for the payment status
 It is possible to check the status of a transaction i.e. if the payment has been paid. To do this, make sure after initiating the transaction, you take note of the poll URL in the response. With this URL, call the `pollTransaction(...)` method of the `Paynow` object you created as follows. Note that checking transaction status is the same for web and mobile based transasctions.
 
-The `InitResponse` response from Paynow will contain various information including:
-* instructions for your customer on how to make the payment on their mobile phone
-* poll URL to check if the transaction has been paid
-
 If the request was successful, you should consider saving the poll URL sent from Paynow in your database so that you can use it later to check if the transaction has been paid.
 
 ```
@@ -134,7 +130,7 @@ For a full usage example please check the `example` folder.
    
    main()async{
       Paynow paynow = Paynow(integrationId: '', integrationKey: '', resultUrl: '', returnUrl :'');
-      Payment payment = paynow.createPayment('Invoice 32', 'user@email.com')
+      Payment payment = paynow.createPayment('Invoice 32', 'user@email.com');
       
       // add something to cart
       payment.add('Banana', 10.0);
