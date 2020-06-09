@@ -83,7 +83,7 @@ class _CartTotal extends StatelessWidget {
                 cart.expressCheckout(this._phone);
               },
               color: Colors.white,
-              child: Text('ECOCASH'),
+              child:Text('ECOCASH'),
             ),
             FlatButton(
               onPressed: () {
@@ -91,7 +91,8 @@ class _CartTotal extends StatelessWidget {
               },
               color: Colors.white,
               child: Text('Web Checkout'),
-            )
+            ),
+            cart.paid ? Icon(Icons.check_box, color: Colors.green,) : CircularProgressIndicator()
           ],
         ),
       ),

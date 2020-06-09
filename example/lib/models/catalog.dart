@@ -32,7 +32,7 @@ class CatalogModel {
   Item getById(int id){
     Random random = Random(); // randomly generating prices
     final double price = random.nextInt(5).toDouble();
-    final item = itemNames[random.nextInt(itemNames.length-1)];
+    final item = itemNames[id];
     return Item(id, item, price);
   }
 
