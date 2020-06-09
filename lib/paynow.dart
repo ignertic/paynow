@@ -129,14 +129,14 @@ class Payment{
 
   /// Total amount of items in cart.
   double total(){
-    double total=0.0;
+    double _total=0.0;
 
     if (this.items.length==0) return 0.0;
 
     for (int i=0;i<this.items.length;i++){
-      total+=this.items[i]['amount'];
+      _total+=this.items[i]['amount'];
     }
-    return total;
+    return _total;
   }
 }
 
@@ -313,14 +313,10 @@ class Paynow{
       if (values[i]=="hash"){
         continue;
       }
-
-
       out += body[values[i]];
-
     }
 
     out+=this.integrationKey;
-
 
     return out;
   }
@@ -336,7 +332,6 @@ class Paynow{
   Future<InitResponse> send(Payment payment){
     return this._init(payment);
   }
-
 }
 
 
