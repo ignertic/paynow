@@ -198,9 +198,9 @@ class Paynow{
   }
 
   String _quotePlus(String value){
-
+    
     try{
-      return value.replaceAll(":", "%3A").replaceAll("/", "%2F");
+      return value.replaceAll(":", "%3A").replaceAll("/", "%2F").replaceAll("@", "%40");
     }catch(e){
       return "";
     }
@@ -217,8 +217,8 @@ class Paynow{
   	List<String> q = qry.split("&");
   	Map<String, dynamic> data={};
   	for(int i=0;i<q.length;i++){
-  		List<String> parts = q[i].split("=");
-  		data[parts[0]] = parts[1];
+  	   List<String> parts = q[i].split("=");
+  	   data[parts[0]] = parts[1];
   	}
   	return data;
   }
@@ -227,8 +227,6 @@ class Paynow{
   Map<String, dynamic> _build(Payment payment){
 
     Map<String, dynamic> body = {
-      "resulturl" : this.resultUrl,
-      "returnurl" : this.returnUrl,
       "reference" : payment.reference,
       "amount" : payment.total(),
       "id" : this.integrationId,
@@ -238,10 +236,13 @@ class Paynow{
     };
 
     body.keys.forEach((f){
-
         String _p = _quotePlus(body[f].toString());
         body[f] = _p;
     });
+
+    // send urls as is
+    body['resulturl'] = this.resultUrl;
+    body['returnurl'] = this.returnUrl;
 
 
 
