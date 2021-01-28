@@ -88,7 +88,7 @@ class InitResponse{
       error: data['error'].toString().toLowerCase(),
       hash: data['hash'],
       hasRedirect: data['browserurl'] != null,
-      redirectUrl: data['browserurl'],
+      redirectUrl: Paynow.notQuotePlus(data['browserurl'].toString()),
       instructions: data['instructions'],
       pollUrl: data['pollurl']==null ? "" :Paynow.notQuotePlus(data['pollurl'])
     );
@@ -198,7 +198,7 @@ class Paynow{
   }
 
   String _quotePlus(String value){
-    
+
     try{
       return value.replaceAll(":", "%3A").replaceAll("/", "%2F").replaceAll("@", "%40");
     }catch(e){
