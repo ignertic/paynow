@@ -48,8 +48,8 @@ class _PaymentStatusStreamManager {
 
   /// close timer and stream controller
   void close() {
-    _timer.cancel();
-    _controller.close();
+    _timer?.cancel();
+    _controller?.close();
   }
 }
 
@@ -344,7 +344,7 @@ class Paynow {
 
   /// close [streamTransactionStatus] stream
   void closeStream() {
-    _statusStreamManager.close();
+    _statusStreamManager?.close();
   }
 
   /// Check Transaction Status
