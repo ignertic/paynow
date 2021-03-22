@@ -344,7 +344,9 @@ class Paynow {
 
   /// close [streamTransactionStatus] stream
   void closeStream() {
-    _statusStreamManager?.close();
+    if (_statusStreamManager != null) {
+      _statusStreamManager.close();
+    }
   }
 
   /// Check Transaction Status
@@ -363,20 +365,30 @@ class Paynow {
   }
 
   Future<InitResponse> _initMobile(
-      Payment payment, String phone, String method) async {
-    if (payment.total() == 0) throw Exception("Invalid Total");
+    Payment payment,
+    String phone,
+    String method,
+  ) async {
+    if (payment.total() == 0) {
+      throw Exception("Total balance of cart items cannot be 0");
+    }
+
     Map<String, dynamic> data = await _buildMobile(payment, phone, method);
+
     var client = http.Client();
-    var response =
-        await client.post(Paynow.URL_INITIATE_MOBILE_TRANSACTION, body: data);
+
+    var response = await client.post(
+      Paynow.URL_INITIATE_MOBILE_TRANSACTION,
+      body: data,
+    );
+
     return InitResponse.fromJson(this._rebuildResponse(response.body));
   }
 
   _buildMobile(Payment payment, String phone, String method) async {
     Map<String, dynamic> body = {
-      "resulturl": this.resultUrl,
-      "returnurl": this.returnUrl,
-      "reference": 'asf',
+      //"reference": 'asf',               // prefer user`s payment.reference
+      'reference': payment.reference,
       "amount": payment.total(),
       "id": this.integrationId,
       "additionalinfo": payment.info(),
@@ -384,7 +396,9 @@ class Paynow {
       //"authemail": "g@gmail.com",
       "status": "Message",
       "phone": phone,
-      "method": method
+      "method": method,
+      //'resulturl': this.resultUrl,
+      //'returnurl': this.returnUrl,
     };
 
     body.keys.forEach((f) {
@@ -394,6 +408,10 @@ class Paynow {
         body[f] = _quotePlus(body[f].toString());
       }
     });
+
+    // send urls as is
+    body['resulturl'] = this.resultUrl;
+    body['returnurl'] = this.returnUrl;
 
     String out = _stringify(body);
 
@@ -406,12 +424,11 @@ class Paynow {
     String out = "";
 
     List<String> values = body.keys.toList();
-    for (int i = 0; i < values.length; i++) {
-      if (values[i] == "hash") {
-        continue;
-      }
 
-      out += body[values[i]];
+    for (int i = 0; i < values.length; i++) {
+      if (values[i] != "hash") {
+        out += body[values[i]];
+      }
     }
 
     out += this.integrationKey;
@@ -420,11 +437,16 @@ class Paynow {
   }
 
   String _generateHash(String string) {
-    return sha512.convert(utf8.encode(string)).toString().toUpperCase();
+    var _hash = sha512.convert(utf8.encode(string)).toString().toUpperCase();
+
+    return _hash;
   }
 
-  Future<InitResponse> sendMobile(Payment payment, String phone,
-      {String method = "ecocash"}) {
+  Future<InitResponse> sendMobile(
+    Payment payment,
+    String phone, {
+    String method = "ecocash",
+  }) {
     //TODO: validate phone number with [localregex] plugin by @iamngoni
     return this._initMobile(payment, phone, method);
   }
