@@ -2,6 +2,8 @@ import '../lib/paynow.dart';
 
 // test payment status stream
 void main() async {
+  // USE YOUR KEYS WHEN TESTING A PAYMENT.
+  // THESE KEYS WERE ONLY USED FOR TESTING AND HAVE BEEN REVOKED
   const String PAYNOW_INTEGRATION_ID = "6054";
   const String PAYNOW_INTEGRATION_KEY = "960ad10a-fc0c-403b-af14-e9520a50fbf4";
   const String PAYNOW_EMAIL = 'youremail@site.com';
