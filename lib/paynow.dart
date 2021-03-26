@@ -1,8 +1,6 @@
 library paynow;
-
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
@@ -308,7 +306,7 @@ class Paynow {
       "id": this.integrationId,
       "additionalinfo": payment.info(),
       "authemail": payment.authEmail ?? "",
-      "status": "Message"
+      "status": "Message",
     };
 
     body.keys.forEach((f) {
@@ -387,18 +385,15 @@ class Paynow {
 
   _buildMobile(Payment payment, String phone, String method) async {
     Map<String, dynamic> body = {
-      //"reference": 'asf',               // prefer user`s payment.reference
+
       'reference': payment.reference,
       "amount": payment.total(),
       "id": this.integrationId,
       "additionalinfo": payment.info(),
       "authemail": payment.authEmail,
-      //"authemail": "g@gmail.com",
       "status": "Message",
       "phone": phone,
       "method": method,
-      //'resulturl': this.resultUrl,
-      //'returnurl': this.returnUrl,
     };
 
     body.keys.forEach((f) {
