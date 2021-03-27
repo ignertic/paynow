@@ -8,6 +8,5 @@ void main() {
     final payment = paynow.createPayment("reference", "authEmail");
     payment.add("product", 1.0);
     expect(payment.total(), 1.0);
-
   });
 }
