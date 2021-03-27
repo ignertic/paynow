@@ -116,9 +116,71 @@ If the request was successful, you should consider saving the poll URL sent from
 
     if (statusResponse.paid){
         print("Client Paid");
-    }else{
+    }
+    else{
         print("Transaction was unsuccessful");
     }
+```
+
+## Serverless Express Checkout in `v1.1.x` (stream transaction for payment status)
+You are now able to `stream` poll url transaction status as opposed to using delay for a serverless checkout. 
+This is useful when you dont have a server to check paynow result url as set by `resultUrl` and `returnUrl` attributes
+- Full test example can be found [here](test/test_express_checkout_status_stream.dart) under test folder
+- `paynow.streamTransactionStatus(..)` takes a required `pollUrl` string and optional `streamInterval` in seconds which is the interval to poll the url, default to `20` sec
+- You can stream status and show current transaction status on UI to user with a `StreamBuilder(..)`
+- Check [example folder](example) for a full example
+```dart
+ // grab poll url from `StatusResponse` object or database
+ var pollUrl = statusResponse.pollUrl;
+
+ // in Widget build(..) method
+ // you can do something like
+ StreamBuilder(
+     stream: paynow.streamTransactionStatus(pollUrl),
+     builder: (context, AsyncSnapshot<StatusResponse> snapshot) {
+         if(snapshot.hasData) {
+             var response = snapshot.data;
+
+             // check status or bool flag here
+             return _trxnStatus(response.status);
+         }
+
+         else {
+             return CircularProgressIndicator();
+         }
+     }
+ )
+
+ // return a widget based on status from stream
+ Widget _trxnStatus(String status) {
+    switch(status) {
+        case 'Paid':
+            return Text('Transaction Successfully Paid');
+            break;
+
+        case 'Sent':
+            return Container(
+                height: 130, 
+                Column(
+                    children: [
+                        Text('Payment request sent'),
+                        SizedBox(height: 20),
+                        CircularProgressIndicator(),
+                        Text('waiting for response...'),
+                    ],
+                ),
+            );
+            break;
+
+        case 'Cancelled':
+            return Text('You have cancelled payment request');
+            break;
+
+        default:
+            return SizedBox.shrink();
+     }
+ }
+
 ```
 
 ## Full usage example
