@@ -213,3 +213,10 @@ For a full usage example please check the `example` folder.
       }
    }
 ```
+
+
+# Note 
+The next release of this package will have null-safety enabled.
+This will be a  breaking change as version 2.x.x will be released soon.
+
+### Happy Coding :)
