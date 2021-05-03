@@ -228,26 +228,26 @@ class Paynow {
       "https://www.paynow.co.zw/interface/remotetransaction";
 
   ///  Merchant's integration Id.
-  String? integrationId;
+  String integrationId;
 
   /// Merchant's Key.
-  String? integrationKey;
+  String integrationKey;
 
   /// Merchant Return Url.
-  String? returnUrl;
+  String returnUrl;
 
   ///  Merchant's Result Url.
-  String? resultUrl;
+  String resultUrl;
 
   /// internal payment status stream manager
   _PaymentStatusStreamManager? _statusStreamManager;
 
   ///
   Paynow({
-    this.integrationId,
-    this.integrationKey,
-    this.returnUrl,
-    this.resultUrl,
+    required this.integrationId,
+    required this.integrationKey,
+    required this.returnUrl,
+    required this.resultUrl,
   });
 
   /// Create Payment - Returns [Payment]
@@ -427,7 +427,7 @@ class Paynow {
       }
     }
 
-    out += this.integrationKey!;
+    out += this.integrationKey;
 
     return out;
   }
