@@ -19,7 +19,7 @@ class _PaymentStatusStreamManager {
   final Paynow _paynowObject;
   final String _pollUrl;
 
-  Timer _timer;
+  Timer? _timer;
 
   final StreamController<StatusResponse> _statusTransactionController =
       StreamController<StatusResponse>();
@@ -47,29 +47,29 @@ class _PaymentStatusStreamManager {
   /// close timer and stream controller
   void dispose() {
     _timer?.cancel();
-    _statusTransactionController?.close();
+    _statusTransactionController.close();
   }
 }
 
 class StatusResponse {
   /// Boolean value indication whether the transaction was paid or not.
-  bool paid;
+  bool? paid;
 
   /// The status of the transaction in Paynow.
-  String status;
+  String? status;
 
   /// The total amount of the transaction.
   var amount;
 
   /// The unique identifier for the transaction.
-  String reference;
+  String? reference;
 
   /// unique traceable transaction reference number from paynow
   /// suitable tracking transaction for reconcilliation
-  String paynowreference;
+  String? paynowreference;
 
   /// The unique identifier for the transaction.
-  String hash;
+  String? hash;
 
   StatusResponse({
     this.paid,
@@ -100,25 +100,25 @@ class StatusResponse {
 
 class InitResponse {
   /// Boolean indicating whether initiate request was successful or not.
-  final bool success;
+  final bool? success;
 
   /// Instruction for transcation status.
-  final String instructions;
+  final String? instructions;
 
   /// Boolean indicating whether the response contains a url to redirect to
-  final bool hasRedirect;
+  final bool? hasRedirect;
 
   /// Transaction Hash
-  final String hash;
+  final String? hash;
 
   /// The url the user should be taken to so they can make a payment
-  final String redirectUrl;
+  final String? redirectUrl;
 
   /// Error String
-  final String error;
+  final String? error;
 
   /// The poll URL sent from Paynow
-  final String pollUrl;
+  final String? pollUrl;
 
   InitResponse(
       {this.redirectUrl,
@@ -165,13 +165,13 @@ class InitResponse {
 
 class Payment {
   /// The unique identifier for the transaction.
-  final String reference;
+  final String? reference;
 
   /// Cart Items.
   List<Map<String, dynamic>> items = [];
 
   /// The user's email address.
-  final String authEmail;
+  final String? authEmail;
 
   Payment({this.reference, this.authEmail});
 
@@ -228,20 +228,21 @@ class Paynow {
       "https://www.paynow.co.zw/interface/remotetransaction";
 
   ///  Merchant's integration Id.
-  String integrationId;
+  String? integrationId;
 
   /// Merchant's Key.
-  String integrationKey;
+  String? integrationKey;
 
   /// Merchant Return Url.
-  String returnUrl;
+  String? returnUrl;
 
   ///  Merchant's Result Url.
-  String resultUrl;
+  String? resultUrl;
 
   /// internal payment status stream manager
-  _PaymentStatusStreamManager _statusStreamManager;
+  _PaymentStatusStreamManager? _statusStreamManager;
 
+  ///
   Paynow({
     this.integrationId,
     this.integrationKey,
@@ -260,9 +261,9 @@ class Paynow {
     }
 
     Map<String, dynamic> data = _build(payment);
-    var client = http.Client();
+
     var response =
-        await client.post(Paynow.URL_INITIATE_TRANSACTION, body: data);
+        await http.post(Uri.parse(Paynow.URL_INITIATE_TRANSACTION), body: data);
 
     return InitResponse.fromJson(this._rebuildResponse(response.body));
   }
@@ -331,32 +332,32 @@ class Paynow {
   ///
   /// returns a [Stream] of [StatusResponse]
   Stream<StatusResponse> streamTransactionStatus(
-    String pollUrl, {
+    String? pollUrl, {
     int streamInterval = 20,
   }) {
     _statusStreamManager =
-        _PaymentStatusStreamManager(this, pollUrl, streamInterval: streamInterval);
+        _PaymentStatusStreamManager(this, pollUrl!, streamInterval: streamInterval);
 
-    return _statusStreamManager.statusTransactionStream;
+    return _statusStreamManager!.statusTransactionStream;
   }
 
   /// close [streamTransactionStatus] stream
   void closeStream() {
     if (_statusStreamManager != null) {
-      _statusStreamManager.dispose();
+      _statusStreamManager!.dispose();
     }
   }
 
   /// Check Transaction Status
   ///
   /// Returns [StatusResponse]
-  Future<StatusResponse> checkTransactionStatus(String pollUrl) async {
+  Future<StatusResponse> checkTransactionStatus(String? pollUrl) async {
     var response = await http.post(
-      pollUrl
+      Uri.parse(pollUrl!
           .replaceAll("%3a", ":")
           .replaceAll("%2f", "/")
           .replaceAll("%3d", "=")
-          .replaceAll("%3f", "?"),
+          .replaceAll("%3f", "?")),
     );
 
     return StatusResponse.fromJson(this._rebuildResponse(response.body));
@@ -373,10 +374,10 @@ class Paynow {
 
     Map<String, dynamic> data = await _buildMobile(payment, phone, method);
 
-    var client = http.Client();
 
-    var response = await client.post(
-      Paynow.URL_INITIATE_MOBILE_TRANSACTION,
+
+    var response = await http.post(
+      Uri.parse(Paynow.URL_INITIATE_MOBILE_TRANSACTION),
       body: data,
     );
 
@@ -426,7 +427,7 @@ class Paynow {
       }
     }
 
-    out += this.integrationKey;
+    out += this.integrationKey!;
 
     return out;
   }
