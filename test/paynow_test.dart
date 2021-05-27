@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:paynow/paynow.dart';
+import '../lib/paynow.dart';
 
 void main() {
   test('check if cart is working', () {
