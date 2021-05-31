@@ -59,7 +59,7 @@ class StatusResponse {
   late final String status;
 
   /// The total amount of the transaction.
-  late final double amount;
+  late final String amount;
 
   /// The unique identifier for the transaction.
   late final String reference;
