@@ -19,7 +19,9 @@ class _PaymentStatusStreamManager {
   final Paynow _paynowObject;
   final String _pollUrl;
 
-  Timer? _timer;
+
+  late final Timer _timer;
+
 
   final StreamController<StatusResponse> _statusTransactionController =
       StreamController<StatusResponse>();
@@ -46,38 +48,42 @@ class _PaymentStatusStreamManager {
 
   /// close timer and stream controller
   void dispose() {
-    _timer?.cancel();
+
+    _timer.cancel();
+
     _statusTransactionController.close();
   }
 }
 
 class StatusResponse {
   /// Boolean value indication whether the transaction was paid or not.
-  bool? paid;
+
+  late final bool paid;
 
   /// The status of the transaction in Paynow.
-  String? status;
+  late final String status;
 
   /// The total amount of the transaction.
-  var amount;
+  late final String amount;
 
   /// The unique identifier for the transaction.
-  String? reference;
+
+  late final String reference;
 
   /// unique traceable transaction reference number from paynow
   /// suitable tracking transaction for reconcilliation
-  String? paynowreference;
+  late final String paynowreference;
 
   /// The unique identifier for the transaction.
-  String? hash;
+  late final String hash;
 
   StatusResponse({
-    this.paid,
-    this.status,
-    this.amount,
-    this.reference,
-    this.hash,
-    this.paynowreference,
+    required this.paid,
+    required this.status,
+    required this.amount,
+    required this.reference,
+    required this.hash,
+    required this.paynowreference,
   });
 
   /// Return [StatusResponse] from json.
@@ -121,13 +127,15 @@ class InitResponse {
   final String? pollUrl;
 
   InitResponse(
-      {this.redirectUrl,
-      this.hasRedirect,
-      this.pollUrl,
-      this.error,
-      this.success,
-      this.hash,
-      this.instructions});
+      {
+      required this.redirectUrl,
+      required this.hasRedirect,
+      required this.pollUrl,
+      required this.error,
+      required this.success,
+      required this.hash,
+      required this.instructions
+    });
 
   Map<String, dynamic> call() {
     Map<String, dynamic> data = {
@@ -150,7 +158,7 @@ class InitResponse {
         error: data['error'].toString().toLowerCase(),
         hash: data['hash'],
         hasRedirect: data['browserurl'] != null,
-        redirectUrl: data['browserurl'],
+        redirectUrl: Paynow.notQuotePlus(data['browserurl'].toString()),
         instructions: data['instructions'],
         pollUrl: data['pollurl'] == null
             ? ""
@@ -173,7 +181,10 @@ class Payment {
   /// The user's email address.
   final String? authEmail;
 
-  Payment({this.reference, this.authEmail});
+  Payment({
+    required this.reference,
+    required this.authEmail
+  });
 
   Payment add(String title, double amount) {
     this.items.add({"title": title, "amount": amount});
@@ -244,10 +255,10 @@ class Paynow {
 
   ///
   Paynow({
-    this.integrationId,
-    this.integrationKey,
-    this.returnUrl,
-    this.resultUrl,
+    required this.integrationId,
+    required this.integrationKey,
+    required this.returnUrl,
+    required this.resultUrl,
   });
 
   /// Create Payment - Returns [Payment]
@@ -306,7 +317,7 @@ class Paynow {
       "amount": payment.total(),
       "id": this.integrationId,
       "additionalinfo": payment.info(),
-      "authemail": payment.authEmail ?? "",
+      "authemail": payment.authEmail,
       "status": "Message",
     };
 

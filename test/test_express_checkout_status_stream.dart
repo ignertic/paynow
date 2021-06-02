@@ -6,7 +6,7 @@ void main() async {
   // THESE KEYS WERE ONLY USED FOR TESTING AND HAVE BEEN REVOKED
   const String PAYNOW_INTEGRATION_ID = "6054";
   const String PAYNOW_INTEGRATION_KEY = "960ad10a-fc0c-403b-af14-e9520a50fbf4";
-  const String PAYNOW_EMAIL = 'youremail@site.com';
+  const String PAYNOW_EMAIL = 'ignertic@icloud.com';
   const String RESULT_URL = 'http:/google.com/q=yoursite';
   const String RETURN_URL = 'http://google.com/q=yoursite';
 
@@ -22,7 +22,8 @@ void main() async {
   // add item to cart
   payment.add('test', 10.0);
   // perform Express Checkout
-  final InitResponse paynowResponse = await paynow.sendMobile(payment, '0784442662', method: "ecocash");
+  final InitResponse paynowResponse = await paynow.sendMobile(payment, "0784442662");
+
 
   // display response data
   print(paynowResponse.toString());
@@ -34,7 +35,7 @@ void main() async {
 
   print('==== listening to status stream =====');
 
-  var _stream = paynow.streamTransactionStatus(paynowResponse.pollUrl, streamInterval: 20);
+  var _stream = paynow.streamTransactionStatus(paynowResponse.pollUrl, streamInterval: 5);
 
   // listen to status changes as opposed to delay and polling
   _stream.listen(
