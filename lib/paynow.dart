@@ -19,7 +19,9 @@ class _PaymentStatusStreamManager {
   final Paynow _paynowObject;
   final String _pollUrl;
 
+
   late final Timer _timer;
+
 
   final StreamController<StatusResponse> _statusTransactionController =
       StreamController<StatusResponse>();
@@ -46,13 +48,16 @@ class _PaymentStatusStreamManager {
 
   /// close timer and stream controller
   void dispose() {
+
     _timer.cancel();
+
     _statusTransactionController.close();
   }
 }
 
 class StatusResponse {
   /// Boolean value indication whether the transaction was paid or not.
+
   late final bool paid;
 
   /// The status of the transaction in Paynow.
@@ -62,6 +67,7 @@ class StatusResponse {
   late final String amount;
 
   /// The unique identifier for the transaction.
+
   late final String reference;
 
   /// unique traceable transaction reference number from paynow
@@ -100,25 +106,25 @@ class StatusResponse {
 
 class InitResponse {
   /// Boolean indicating whether initiate request was successful or not.
-  final bool success;
+  final bool? success;
 
   /// Instruction for transcation status.
-  final String instructions;
+  final String? instructions;
 
   /// Boolean indicating whether the response contains a url to redirect to
-  final bool hasRedirect;
+  final bool? hasRedirect;
 
   /// Transaction Hash
-  final String hash;
+  final String? hash;
 
   /// The url the user should be taken to so they can make a payment
-  final String redirectUrl;
+  final String? redirectUrl;
 
   /// Error String
-  final String error;
+  final String? error;
 
   /// The poll URL sent from Paynow
-  final String pollUrl;
+  final String? pollUrl;
 
   InitResponse(
       {
@@ -167,13 +173,13 @@ class InitResponse {
 
 class Payment {
   /// The unique identifier for the transaction.
-  final String reference;
+  final String? reference;
 
   /// Cart Items.
   List<Map<String, dynamic>> items = [];
 
   /// The user's email address.
-  final String authEmail;
+  final String? authEmail;
 
   Payment({
     required this.reference,
@@ -233,16 +239,16 @@ class Paynow {
       "https://www.paynow.co.zw/interface/remotetransaction";
 
   ///  Merchant's integration Id.
-  String integrationId;
+  String? integrationId;
 
   /// Merchant's Key.
-  String integrationKey;
+  String? integrationKey;
 
   /// Merchant Return Url.
-  String returnUrl;
+  String? returnUrl;
 
   ///  Merchant's Result Url.
-  String resultUrl;
+  String? resultUrl;
 
   /// internal payment status stream manager
   _PaymentStatusStreamManager? _statusStreamManager;
@@ -432,7 +438,7 @@ class Paynow {
       }
     }
 
-    out += this.integrationKey;
+    out += this.integrationKey!;
 
     return out;
   }
