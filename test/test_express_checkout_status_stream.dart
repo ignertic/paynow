@@ -21,7 +21,7 @@ void main() async {
   final Payment payment = paynow.createPayment('reference-test', PAYNOW_EMAIL);
   // add item to cart
   payment.add('test', 10.0);
-  // perform Express Checkout
+  
   // final InitResponse paynowResponse = await paynow.sendMobile(payment, '0784442662', method: "ecocash");
   final InitResponse paynowResponse = await paynow.send(payment);
 
