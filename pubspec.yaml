@@ -1,8 +1,6 @@
 name: paynow
 description: Paynow Client helper package.
-
 version: 2.1.2
-
 email: iamsupercode@outlook.com
 homepage: https://github.com/ignertic/paynow
 
@@ -14,8 +12,7 @@ dependencies:
     sdk: flutter
   http: ^0.13.2
   crypto: ^3.0.1
-
-
+  localregex: ^2.0.3
 
 
 dev_dependencies:

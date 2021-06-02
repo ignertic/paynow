@@ -3,6 +3,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
+import 'package:localregex/localregex.dart';
+
+LocalRegex localRegex = LocalRegex();
 
 class HashMismatchException implements Exception {
   final String cause;
@@ -19,9 +22,7 @@ class _PaymentStatusStreamManager {
   final Paynow _paynowObject;
   final String _pollUrl;
 
-
   late final Timer _timer;
-
 
   final StreamController<StatusResponse> _statusTransactionController =
       StreamController<StatusResponse>();
@@ -48,16 +49,13 @@ class _PaymentStatusStreamManager {
 
   /// close timer and stream controller
   void dispose() {
-
     _timer.cancel();
-
     _statusTransactionController.close();
   }
 }
 
 class StatusResponse {
   /// Boolean value indication whether the transaction was paid or not.
-
   late final bool paid;
 
   /// The status of the transaction in Paynow.
@@ -67,7 +65,6 @@ class StatusResponse {
   late final String amount;
 
   /// The unique identifier for the transaction.
-
   late final String reference;
 
   /// unique traceable transaction reference number from paynow
@@ -455,6 +452,16 @@ class Paynow {
     String method = "ecocash",
   }) {
     //TODO: validate phone number with [localregex] plugin by @iamngoni
+    if (localRegex.isEconet(phone)){
+      method = "ecocash";
+    }else if (localRegex.isNetone(phone)){
+      method = "onemoney";
+    }else if (localRegex.isTelecel(phone)){
+      method = "telecash";
+    }else{
+      throw ValueError("Mobile Number is not valid.");
+    }
+
     return this._initMobile(payment, phone, method);
   }
 
