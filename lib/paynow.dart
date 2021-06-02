@@ -3,6 +3,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
+import 'package:localregex/localregex.dart';
+
+LocalRegex localRegex = LocalRegex();
 
 class HashMismatchException implements Exception {
   final String cause;
@@ -449,6 +452,16 @@ class Paynow {
     String method = "ecocash",
   }) {
     //TODO: validate phone number with [localregex] plugin by @iamngoni
+    if (localRegex.isEconet(phone)){
+      method = "ecocash";
+    }else if (localRegex.isNetone(phone)){
+      method = "onemoney";
+    }else if (localRegex.isTelecel(phone)){
+      method = "telecash";
+    }else{
+      throw ValueError("Mobile Number is not valid.");
+    }
+
     return this._initMobile(payment, phone, method);
   }
 
