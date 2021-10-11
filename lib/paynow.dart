@@ -103,25 +103,25 @@ class StatusResponse {
 
 class InitResponse {
   /// Boolean indicating whether initiate request was successful or not.
-  final bool success;
+  final bool? success;
 
   /// Instruction for transcation status.
-  final String instructions;
+  final String? instructions;
 
   /// Boolean indicating whether the response contains a url to redirect to
   final bool hasRedirect;
 
   /// Transaction Hash
-  final String hash;
+  final String? hash;
 
   /// The url the user should be taken to so they can make a payment
-  final String redirectUrl;
+  final String? redirectUrl;
 
   /// Error String
   final String error;
 
   /// The poll URL sent from Paynow
-  final String pollUrl;
+  final String? pollUrl;
 
   InitResponse(
       {
