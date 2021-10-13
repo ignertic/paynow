@@ -48,11 +48,29 @@ Create a new payment using any of the `createPayment(...)` methods, ensuring you
     Payment payment = paynow.createPayment("Invoice 32", "client@email.com");
 ```
 
-## Add item(s) to cart
+## Create Item to Add to cart
 ```
-    payment.add("Banana", 2.0);
+    final cartItem = PaynowCartItem(title : 'Banana', amount: 20.0)
+
+    // add to cart
+    payment.addToCart(cartItem);
+
+    // add to cart with specific quantity
+    payment.addToCart(cartItem, quantity: 5);
+
 ```
 
+## Remove item from cart
+```
+    // Remove 1 unit of the item in the cart
+    payment.removeFromCart(cartItem);
+
+    // Remove specific quantity of items in cart
+    payment.remoteFromCart(cartItem, quantity: 5);
+
+    // Remove item from cart completely
+    payment.deleteCartItem(cartItem);
+```
 
 ## Initiating a web based transaction
 A web based transaction is made over the web, via the Paynow website.
@@ -85,7 +103,8 @@ A mobile transaction is a transaction made using mobile money e.g. using Ecocash
 Create a new payment using the `createPayment(...)` method that requires a unique merchant reference and the email address of the user making the payment.
 
 ```
-    InitResponse response = await paynow.sendMobile(payment, "0784442662", "ecocash"); // defaults to ecocash if method not specified
+    InitResponse response = await paynow.sendMobile(payment, "0784442662", MobilePaymentMethod.ecocash);
+
 ```
 
 ## Check Response results
@@ -114,7 +133,7 @@ If the request was successful, you should consider saving the poll URL sent from
     InitResponse response = await paynow.send(payment);
     StatusResponse statusResponse = await paynow.checkTransactionStatus(response.pollUrl);
 
-    if (statusResponse.paid){
+    if (statusResponse.status == "Paid"){
         print("Client Paid");
     }
     else{
@@ -198,7 +217,7 @@ For a full usage example please check the `example` folder.
       payment.add('Banana', 10.0);
 
       // start web checkout
-      InitResponse response = await payment.sendMobile(payment, '0784442662');
+      InitResponse response = await payment.sendMobile(payment, '0784442662', MobilePaymentMethod.ecocash);
 
       //delay
       await Future.delayed(Duration(seconds: 3));
@@ -206,7 +225,7 @@ For a full usage example please check the `example` folder.
       // check transaction status
       StatusResponse status = await paynow.checkTransactionStatus(response.pollUrl);
 
-      if (status.paid){
+      if (status.status == "Paid"){
         print('Yes!!!!!');
       }else{
         print('You didn\'t pay');
@@ -215,7 +234,7 @@ For a full usage example please check the `example` folder.
 ```
 
 
-# Note 
+# Note
 The next release of this package will have null-safety enabled.
 This will be a  breaking change as version 2.x.x will be released soon.
 

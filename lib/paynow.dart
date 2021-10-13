@@ -5,213 +5,22 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:localregex/localregex.dart';
 
+
+
+part '_routes.dart';
+part 'models/_paynow_cart_item.dart';
+part 'errors/errors.dart';
+part 'payment_status_stream_manager/payment_status_stream_manager.dart';
+part 'models/status_response.dart';
+part 'models/init_response.dart';
+part 'models/payment.dart';
+part 'models/mobile_payment_methods.dart';
+
+
+
+
 LocalRegex localRegex = LocalRegex();
 
-class HashMismatchException implements Exception {
-  final String cause;
-  HashMismatchException(this.cause);
-}
-
-class ValueError implements Exception {
-  final String cause;
-  ValueError(this.cause);
-}
-
-/// stream payment status rather than waiting for delay
-class _PaymentStatusStreamManager {
-  final Paynow _paynowObject;
-  final String _pollUrl;
-
-  late final Timer _timer;
-
-  final StreamController<StatusResponse> _statusTransactionController =
-      StreamController<StatusResponse>();
-
-  Stream<StatusResponse> get statusTransactionStream => _statusTransactionController.stream;
-
-  void _startStream(int streamInterval) {
-    _timer = Timer.periodic(
-      Duration(seconds: streamInterval),
-      (timer) async {
-        // poll transaction poll-url
-        var _status = await _paynowObject.checkTransactionStatus(_pollUrl);
-
-        // update stream with latest poll url result
-        _statusTransactionController.sink.add(_status);
-      },
-    );
-  }
-
-  _PaymentStatusStreamManager(this._paynowObject, this._pollUrl, {int streamInterval = 20}) {
-    _startStream(streamInterval);
-    //statusTransactionStream.listen((statusResponse) => statusResponse);
-  }
-
-  /// close timer and stream controller
-  void dispose() {
-    _timer.cancel();
-    _statusTransactionController.close();
-  }
-}
-
-class StatusResponse {
-  /// Boolean value indication whether the transaction was paid or not.
-  late final bool paid;
-
-  /// The status of the transaction in Paynow.
-  late final String status;
-
-  /// The total amount of the transaction.
-  late final String amount;
-
-  /// The unique identifier for the transaction.
-  late final String reference;
-
-  /// unique traceable transaction reference number from paynow
-  /// suitable tracking transaction for reconcilliation
-  late final String paynowreference;
-
-  /// The unique identifier for the transaction.
-  late final String hash;
-
-  StatusResponse({
-    required this.paid,
-    required this.status,
-    required this.amount,
-    required this.reference,
-    required this.hash,
-    required this.paynowreference,
-  });
-
-  /// Return [StatusResponse] from json.
-  static fromJson(Map<String, dynamic> data) {
-    return StatusResponse(
-      paid: data['paid'] == "paid",
-      status: data['status'],
-      amount: data['amount'],
-      reference: data['reference'],
-      hash: data['hash'],
-      paynowreference: data['paynowreference'],
-    );
-  }
-
-  @override
-  String toString() {
-    return 'StatusResponse(paid: $paid, paynowreference: $paynowreference, status: $status, amount: $amount, reference: $reference, hash: $hash)';
-  }
-}
-
-class InitResponse {
-  /// Boolean indicating whether initiate request was successful or not.
-  final bool? success;
-
-  /// Instruction for transcation status.
-  final String? instructions;
-
-  /// Boolean indicating whether the response contains a url to redirect to
-  final bool? hasRedirect;
-
-  /// Transaction Hash
-  final String? hash;
-
-  /// The url the user should be taken to so they can make a payment
-  final String? redirectUrl;
-
-  /// Error String
-  final String? error;
-
-  /// The poll URL sent from Paynow
-  final String? pollUrl;
-
-  InitResponse(
-      {
-      required this.redirectUrl,
-      required this.hasRedirect,
-      required this.pollUrl,
-      required this.error,
-      required this.success,
-      required this.hash,
-      required this.instructions
-    });
-
-  Map<String, dynamic> call() {
-    Map<String, dynamic> data = {
-      "redirect": this.redirectUrl,
-      "hasRedirect": this.hasRedirect,
-      "pollUrl": this.pollUrl,
-      "error": this.error,
-      "success": this.success,
-      "hash": this.hash,
-      "instructions": this.instructions
-    };
-    // TODO:/// Refactor
-    return data;
-  }
-
-  /// Returns [InitResponse]
-  static fromJson(Map<String, dynamic> data) {
-    return InitResponse(
-        success: data['status'] != "error",
-        error: data['error'].toString().toLowerCase(),
-        hash: data['hash'],
-        hasRedirect: data['browserurl'] != null,
-        redirectUrl: Paynow.notQuotePlus(data['browserurl'].toString()),
-        instructions: data['instructions'],
-        pollUrl: data['pollurl'] == null
-            ? ""
-            : Paynow.notQuotePlus(data['pollurl']));
-  }
-
-  @override
-  String toString() {
-    return 'InitResponse(success: $success, instructions: $instructions, hasRedirect: $hasRedirect, hash: $hash, redirectUrl: $redirectUrl, error: $error, pollUrl: $pollUrl)';
-  }
-}
-
-class Payment {
-  /// The unique identifier for the transaction.
-  final String? reference;
-
-  /// Cart Items.
-  List<Map<String, dynamic>> items = [];
-
-  /// The user's email address.
-  final String? authEmail;
-
-  Payment({
-    required this.reference,
-    required this.authEmail
-  });
-
-  Payment add(String title, double amount) {
-    this.items.add({"title": title, "amount": amount});
-
-    return this;
-  }
-
-  /// Return Info of items in cart.
-  String info() {
-    String out = "";
-    for (int i = 0; i < this.items.length; i++) {
-      out += this.items.elementAt(i)["title"];
-    }
-    out += "%2C+";
-
-    return out;
-  }
-
-  /// Total amount of items in cart.
-  double total() {
-    double total = 0.0;
-
-    if (this.items.length == 0) return 0.0;
-
-    for (int i = 0; i < this.items.length; i++) {
-      total += this.items[i]['amount'];
-    }
-    return total;
-  }
-}
 
 /// Contains helper methods to interact with the Paynow API.
 ///
@@ -228,12 +37,6 @@ class Payment {
 ///   resultUrl:  Merchant's result url.
 class Paynow {
   /// Transaction initation url (constant).
-  static const String URL_INITIATE_TRANSACTION =
-      "https://www.paynow.co.zw/interface/initiatetransaction";
-
-  /// Transaction initation url (constant)
-  static const String URL_INITIATE_MOBILE_TRANSACTION =
-      "https://www.paynow.co.zw/interface/remotetransaction";
 
   ///  Merchant's integration Id.
   String? integrationId;
@@ -260,18 +63,20 @@ class Paynow {
 
   /// Create Payment - Returns [Payment]
   Payment createPayment(String reference, String authEmail) {
-    return Payment(reference: reference, authEmail: authEmail);
+    return Payment(reference: reference, authEmail: authEmail, items: {});
   }
 
   Future<InitResponse> _init(Payment payment) async {
-    if (payment.total() < 0 || payment.total() == 0) {
+    if (payment.total < 0 || payment.total == 0) {
       throw ValueError("Transaction Total Invalid");
     }
 
     Map<String, dynamic> data = _build(payment);
 
     var response =
-        await http.post(Uri.parse(Paynow.URL_INITIATE_TRANSACTION), body: data);
+
+        await http.post(Uri.parse(PaynowUrlRoutes.URL_INITIATE_TRANSACTION), body: data);
+
 
     return InitResponse.fromJson(this._rebuildResponse(response.body));
   }
@@ -311,9 +116,10 @@ class Paynow {
   Map<String, dynamic> _build(Payment payment) {
     Map<String, dynamic> body = {
       "reference": payment.reference,
-      "amount": payment.total(),
+      "amount": payment.total,
       "id": this.integrationId,
-      "additionalinfo": payment.info(),
+      "additionalinfo": payment.info,
+
       "authemail": payment.authEmail,
       "status": "Message",
     };
@@ -371,12 +177,14 @@ class Paynow {
     return StatusResponse.fromJson(this._rebuildResponse(response.body));
   }
 
+  /// Send  mobile payment request to Paynow
+  /// Returns [InitResponse]
   Future<InitResponse> _initMobile(
     Payment payment,
     String phone,
     String method,
   ) async {
-    if (payment.total() == 0) {
+    if (payment.total == 0) {
       throw Exception("Total balance of cart items cannot be 0");
     }
 
@@ -384,32 +192,35 @@ class Paynow {
 
 
 
-    var response = await http.post(
-      Uri.parse(Paynow.URL_INITIATE_MOBILE_TRANSACTION),
+
+    final response = await http.post(
+      Uri.parse(PaynowUrlRoutes.URL_INITIATE_MOBILE_TRANSACTION),
       body: data,
     );
 
     return InitResponse.fromJson(this._rebuildResponse(response.body));
   }
 
-  _buildMobile(Payment payment, String phone, String method) async {
+  /// Build Mobile transaction request
+  /// Returns [Map<String, dynamic>]
+  Future<Map<String, dynamic>> _buildMobile(Payment payment, String phone, String method) async {
     Map<String, dynamic> body = {
-
       'reference': payment.reference,
-      "amount": payment.total(),
+      "amount": payment.total,
       "id": this.integrationId,
-      "additionalinfo": payment.info(),
+      "additionalinfo": payment.info,
       "authemail": payment.authEmail,
       "status": "Message",
       "phone": phone,
       "method": method,
     };
 
-    body.keys.forEach((f) {
-      if (f == "authemail") {
-        // skip auth
+    body.keys.forEach((paymentInfoElement) {
+      if (paymentInfoElement == "authemail") {
+        // skip auth email
+        // Triggers a bug
       } else {
-        body[f] = _quotePlus(body[f].toString());
+        body[paymentInfoElement] = _quotePlus(body[paymentInfoElement].toString());
       }
     });
 
@@ -424,6 +235,8 @@ class Paynow {
     return body;
   }
 
+
+  /// convert payment body to [String]
   String _stringify(Map<String, dynamic> body) {
     String out = "";
 
@@ -440,34 +253,32 @@ class Paynow {
     return out;
   }
 
+  /// generate secure hash for the payment request
   String _generateHash(String string) {
-    var _hash = sha512.convert(utf8.encode(string)).toString().toUpperCase();
+    String _hash = sha512.convert(utf8.encode(string)).toString().toUpperCase();
 
     return _hash;
   }
 
+  /// Initiate mobile transactions
   Future<InitResponse> sendMobile(
     Payment payment,
-    String phone, {
-    String method = "ecocash",
-  }) {
-    //TODO: validate phone number with [localregex] plugin by @iamngoni
-    if (localRegex.isEconet(phone)){
-      method = "ecocash";
-    }else if (localRegex.isNetone(phone)){
-      method = "onemoney";
-    }else if (localRegex.isTelecel(phone)){
-      method = "telecash";
-    }else{
-      throw ValueError("Mobile Number is not valid.");
+    String phone,
+    MobilePaymentMethod method,
+  ) {
+
+    if (
+      !(localRegex.isEconet(phone) ||
+      localRegex.isNetone(phone) ||
+      localRegex.isTelecel(phone))
+    ){
+      throw ValueError('Invalid Mobile Number');
     }
 
-    return this._initMobile(payment, phone, method);
+    return this._initMobile(payment, phone, method.toRepresentation);
   }
 
   Future<InitResponse> send(Payment payment) {
     return this._init(payment);
   }
 }
-
-main() {}

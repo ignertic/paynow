@@ -11,8 +11,11 @@ void main() {
       resultUrl: "https://result.url"
     );
     final payment = paynow.createPayment("reference", "authEmail");
-    payment.add("product", 1.0);
-    expect(payment.total(), 1.0);
+    final cartItem1 = PaynowCartItem(title: 'Product 1', amount: 20.0);
+    payment.addToCart(cartItem1, quantity: 2);
+
+    expect(payment.items[cartItem1], 2);
+    expect(payment.total, 40.0);
 
   });
 }
