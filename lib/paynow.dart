@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:localregex/localregex.dart';
 
 
+
 part '_routes.dart';
 part 'models/_paynow_cart_item.dart';
 part 'errors/errors.dart';
@@ -38,16 +39,16 @@ class Paynow {
   /// Transaction initation url (constant).
 
   ///  Merchant's integration Id.
-  String integrationId;
+  String? integrationId;
 
   /// Merchant's Key.
-  String integrationKey;
+  String? integrationKey;
 
   /// Merchant Return Url.
-  String returnUrl;
+  String? returnUrl;
 
   ///  Merchant's Result Url.
-  String resultUrl;
+  String? resultUrl;
 
   /// internal payment status stream manager
   _PaymentStatusStreamManager? _statusStreamManager;
@@ -74,6 +75,8 @@ class Paynow {
 
     var response =
         await http.post(Uri.parse(PaynowUrlRoutes.URL_INITIATE_TRANSACTION), body: data);
+
+
 
     return InitResponse.fromJson(this._rebuildResponse(response.body));
   }
@@ -116,6 +119,7 @@ class Paynow {
       "amount": payment.total,
       "id": this.integrationId,
       "additionalinfo": payment.info,
+
       "authemail": payment.authEmail,
       "status": "Message",
     };
@@ -188,6 +192,7 @@ class Paynow {
 
 
 
+
     final response = await http.post(
       Uri.parse(PaynowUrlRoutes.URL_INITIATE_MOBILE_TRANSACTION),
       body: data,
@@ -243,7 +248,7 @@ class Paynow {
       }
     }
 
-    out += this.integrationKey;
+    out += this.integrationKey!;
 
     return out;
   }

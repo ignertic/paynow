@@ -37,3 +37,10 @@ class PaynowCartItem {
     );
   }
 }
+
+// Mobile Payment options
+enum MobilePaymentMethod {
+  ecocash,
+  onemoney,
+  telecash
+}
