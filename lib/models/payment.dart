@@ -11,6 +11,7 @@ class Payment {
   /// Represents the quantity of the item
 
   final Map<PaynowCartItem, int> items;
+  get cartItems => items;
 
   /// The user's email address.
   final String authEmail;
@@ -29,6 +30,16 @@ class Payment {
         .map((paynowCartItemData)
           =>PaynowCartItem.fromMap(paynowCartItemData))
     );
+  }
+
+  /// Clear all the items in the cart
+  void clearCart(){
+    this.items.clear();
+  }
+
+  /// Delete Item from cart
+  void deleteCartItem(PaynowCartItem cartItem){
+    this.items.remove(cartItem);
   }
 
   /// Adding [PaynowCartItems] to [Payment.items]
