@@ -74,8 +74,8 @@ class Paynow {
     Map<String, dynamic> data = _build(payment);
 
     var response =
-
         await http.post(Uri.parse(PaynowUrlRoutes.URL_INITIATE_TRANSACTION), body: data);
+
 
 
     return InitResponse.fromJson(this._rebuildResponse(response.body));
