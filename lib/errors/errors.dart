@@ -1,4 +1,4 @@
-part of '../paynow.dart';
+// remove
 
 class HashMismatchException implements Exception {
   final String cause;

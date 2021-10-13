@@ -1,4 +1,4 @@
-part of 'paynow.dart';
+
 
 class PaynowUrlRoutes {
   static const String URL_INITIATE_TRANSACTION =

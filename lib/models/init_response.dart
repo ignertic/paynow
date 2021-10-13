@@ -1,5 +1,4 @@
-part of '../paynow.dart';
-
+import '../src/paynow.dart';
 
 class InitResponse {
   /// Boolean indicating whether initiate request was successful or not.

@@ -1,4 +1,4 @@
-part of '../paynow.dart';
+// remove
 
 ///
 /// Represents a product or service
