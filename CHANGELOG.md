@@ -3,6 +3,7 @@
 ## [2.0.0] - Enable null-safety
 ## [2.1.1] - Fix null-safety issues
 ## [2.1.2] - Change amount type to String [obeying paynow responses]
+
 ## [2.2.0] - Auto detect method type in express checkout
 ## [3.0.0]
   # Breaking Changes
@@ -14,3 +15,4 @@
   - Added Payment.clear method to clear cart
   - Added Payment.deleteCartItem to remove item from cart
   - Added Payment.cartItems to list all items in the cart
+
