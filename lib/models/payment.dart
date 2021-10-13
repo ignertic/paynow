@@ -1,4 +1,4 @@
-part of '../paynow.dart';
+import '_paynow_cart_item.dart';
 
 class Payment {
   /// The unique identifier for the transaction.

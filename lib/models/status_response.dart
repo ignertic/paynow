@@ -1,4 +1,4 @@
-part of '../paynow.dart';
+// remove
 
 class StatusResponse {
   /// Boolean value indication whether the transaction was paid or not.
