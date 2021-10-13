@@ -1,7 +1,7 @@
 name: paynow
 
 description: Paynow Client helper package to help initiate payments.
-version: 3.0.1
+version: 3.0.2
 
 email: iamsupercode@outlook.com
 homepage: https://github.com/ignertic/paynow

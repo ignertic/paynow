@@ -1,4 +1,6 @@
+
 # Miscellaneous
+pubspec.lock
 *.class
 *.log
 *.pyc
