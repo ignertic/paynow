@@ -5,8 +5,8 @@ import '../lib/paynow.dart';
 void main() {
   test('check if cart is working', () {
     final paynow = Paynow(
-      integrationId: "8379",
-      integrationKey: "a671ff85-94dc-4613-93f2-9d3de0f5d5ff",
+      integrationId: "INTEGRATION_ID",
+      integrationKey: "INTEGRATION_KEY",
       returnUrl: "https://return.url",
       resultUrl: "https://result.url"
     );
