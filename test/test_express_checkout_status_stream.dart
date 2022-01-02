@@ -4,8 +4,8 @@ import '../lib/paynow.dart';
 void main() async {
   // USE YOUR KEYS WHEN TESTING A PAYMENT.
   // THESE KEYS WERE ONLY USED FOR TESTING AND HAVE BEEN REVOKED
-  const String PAYNOW_INTEGRATION_ID = "6054";
-  const String PAYNOW_INTEGRATION_KEY = "960ad10a-fc0c-403b-af14-e9520a50fbf4";
+  const String PAYNOW_INTEGRATION_ID = "8379";
+  const String PAYNOW_INTEGRATION_KEY = "a671ff85-94dc-4613-93f2-9d3de0f5d5ff";
   const String PAYNOW_EMAIL = 'ignertic@icloud.com';
   const String RESULT_URL = 'http:/google.com/q=yoursite';
   const String RETURN_URL = 'http://google.com/q=yoursite';
