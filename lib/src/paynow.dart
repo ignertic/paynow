@@ -10,9 +10,6 @@ import '../_routes.dart';
 import '../errors/errors.dart';
 
 
-LocalRegex localRegex = LocalRegex();
-
-
 /// Contains helper methods to interact with the Paynow API.
 ///
 ///  Attributes:
@@ -259,9 +256,9 @@ class Paynow {
   ) {
 
     if (
-      !(localRegex.isEconet(phone) ||
-      localRegex.isNetone(phone) ||
-      localRegex.isTelecel(phone))
+      !(LocalRegex.isEconet(phone) ||
+      LocalRegex.isNetone(phone) ||
+      LocalRegex.isTelecel(phone))
     ){
       throw ValueError('Invalid Mobile Number');
     }

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:paynow/paynow.dart';
-import 'package:paynow/models/status_response.dart';
+// import 'package:paynow/paynow.dart';
+import '../paynow.dart';
 
 
 /// stream payment status rather than waiting for delay

@@ -32,7 +32,7 @@ class StatusResponse {
   /// Return [StatusResponse] from json.
   static fromJson(Map<String, dynamic> data) {
     return StatusResponse(
-      paid: data['paid'] == "paid",
+      paid: data['status'] == "Paid",
       status: data['status'],
       amount: data['amount'],
       reference: data['reference'],
