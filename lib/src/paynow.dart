@@ -200,14 +200,14 @@ class Paynow {
       "amount": payment.total,
       "id": this.integrationId,
       "additionalinfo": payment.info,
-      "authemail": payment.authEmail,
+      "username": payment.authEmail,
       "status": "Message",
       "phone": phone,
       "method": method,
     };
 
     body.keys.forEach((paymentInfoElement) {
-      if (paymentInfoElement == "authemail") {
+      if (false){ // paymentInfoElement == "authemail") {
         // skip auth email
         // Triggers a bug
       } else {

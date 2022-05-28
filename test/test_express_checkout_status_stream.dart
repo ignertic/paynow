@@ -25,8 +25,8 @@ void main() async {
   payment.addToCart(cartItem1);
 
   // perform Express Checkout
-  // final InitResponse paynowResponse = await paynow.sendMobile(payment, '0784442662', method: "ecocash");
-  final InitResponse paynowResponse = await paynow.send(payment);
+  final InitResponse paynowResponse = await paynow.sendMobile(payment, '0784442662', method: "ecocash");
+  //final InitResponse paynowResponse = await paynow.send(payment);
 
   // display response data
   print(paynowResponse.toString());
@@ -43,10 +43,13 @@ void main() async {
   // listen to status changes as opposed to delay and polling
   _stream.listen(
     (event) {
-      print('=== stream event at: ${DateTime.now()} | event: $event');
-      if (event.status != 'Sent') {
-        paynow.closeStream();
-      }
+      // print('=== stream event at: ${DateTime.now()} | event: $event');
+      print(event.status);
+      
+      // if (event.status != 'Sent') {
+      //   paynow.closeStream();
+      //   print('closing tream');
+      // }
     },
   );
 

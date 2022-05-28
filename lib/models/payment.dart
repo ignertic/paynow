@@ -42,7 +42,7 @@ class Payment {
     this.items.remove(cartItem);
   }
 
-  /// Adding [PaynowCartItems] to [Payment.items]
+  /// Adding [PaynowCartItem] to [Payment.items]
   /// [quantity]
   void addToCart(PaynowCartItem cartItem, { int? quantity }) {
     if (this.items.containsKey(cartItem)){

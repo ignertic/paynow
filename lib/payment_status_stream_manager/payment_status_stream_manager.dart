@@ -1,7 +1,5 @@
 import 'dart:async';
-
-import 'package:paynow/paynow.dart';
-import 'package:paynow/models/status_response.dart';
+import '../models/status_response.dart';
 
 
 /// stream payment status rather than waiting for delay
@@ -10,7 +8,7 @@ class PaymentStatusStreamManager {
     _startStream(streamInterval);
     //statusTransactionStream.listen((statusResponse) => statusResponse);
   }
-  final Paynow _paynowObject;
+  final _paynowObject;
   final String _pollUrl;
 
   late final Timer _timer;
@@ -24,11 +22,17 @@ class PaymentStatusStreamManager {
     _timer = Timer.periodic(
       Duration(seconds: streamInterval),
       (timer) async {
-        // poll transaction poll-url
-        var _status = await _paynowObject.checkTransactionStatus(_pollUrl);
+        // maximum checks 5
+        if (timer.tick == 5){
+          dispose();
+        }else{
 
-        // update stream with latest poll url result
-        _statusTransactionController.sink.add(_status);
+          // poll transaction poll-url
+          var _status = await _paynowObject.checkTransactionStatus(_pollUrl);
+
+          // update stream with latest poll url result
+          _statusTransactionController.sink.add(_status);
+        }
       },
     );
   }
