@@ -3,6 +3,8 @@
 // Mobile Payment options
 enum MobilePaymentMethod {
   ecocash,
+  innbucks,
   onemoney,
-  telecash
+  paygo,
+  telecash,
 }
