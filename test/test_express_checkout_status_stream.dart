@@ -11,12 +11,10 @@ void main() async {
   const String RETURN_URL = 'http://google.com/q=yoursite';
 
   final paynow = Paynow(
-    integrationId: PAYNOW_INTEGRATION_ID,
-    integrationKey: PAYNOW_INTEGRATION_KEY,
-    returnUrl: RETURN_URL,
-    resultUrl: RESULT_URL
-  );
-
+      integrationId: PAYNOW_INTEGRATION_ID,
+      integrationKey: PAYNOW_INTEGRATION_KEY,
+      returnUrl: RETURN_URL,
+      resultUrl: RESULT_URL);
 
   final Payment payment = paynow.createPayment('reference-test', PAYNOW_EMAIL);
   final cartItem1 = PaynowCartItem(title: 'test-item', amount: 20.0);
@@ -32,13 +30,15 @@ void main() async {
   print(paynowResponse.toString());
 
   print('=== once off check status ====');
-  final StatusResponse paynowStatusResponse = await paynow.checkTransactionStatus(paynowResponse.pollUrl);
+  final StatusResponse paynowStatusResponse =
+      await paynow.checkTransactionStatus(paynowResponse.pollUrl);
 
   print(paynowStatusResponse.toString());
 
   print('==== listening to status stream =====');
 
-  var _stream = paynow.streamTransactionStatus(paynowResponse.pollUrl, streamInterval: 5);
+  var _stream =
+      paynow.streamTransactionStatus(paynowResponse.pollUrl, streamInterval: 5);
 
   // listen to status changes as opposed to delay and polling
   _stream.listen(
