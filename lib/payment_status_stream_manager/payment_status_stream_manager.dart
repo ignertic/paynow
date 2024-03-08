@@ -3,10 +3,10 @@ import 'dart:async';
 // import 'package:paynow/paynow.dart';
 import '../paynow.dart';
 
-
 /// stream payment status rather than waiting for delay
 class PaymentStatusStreamManager {
-  PaymentStatusStreamManager(this._paynowObject, this._pollUrl, {int streamInterval = 20}) {
+  PaymentStatusStreamManager(this._paynowObject, this._pollUrl,
+      {int streamInterval = 20}) {
     _startStream(streamInterval);
     //statusTransactionStream.listen((statusResponse) => statusResponse);
   }
@@ -18,7 +18,8 @@ class PaymentStatusStreamManager {
   final StreamController<StatusResponse> _statusTransactionController =
       StreamController<StatusResponse>();
 
-  Stream<StatusResponse> get statusTransactionStream => _statusTransactionController.stream;
+  Stream<StatusResponse> get statusTransactionStream =>
+      _statusTransactionController.stream;
 
   void _startStream(int streamInterval) {
     _timer = Timer.periodic(
@@ -32,7 +33,6 @@ class PaymentStatusStreamManager {
       },
     );
   }
-
 
   /// close timer and stream controller
   void dispose() {

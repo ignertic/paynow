@@ -22,16 +22,29 @@ class InitResponse {
   /// The poll URL sent from Paynow
   final String? pollUrl;
 
-  InitResponse(
-      {
-      required this.redirectUrl,
-      required this.hasRedirect,
-      required this.pollUrl,
-      required this.error,
-      required this.success,
-      required this.hash,
-      required this.instructions
-    });
+  /// Authorization Code
+  /// The authorization code for the transaction
+  final String? authorizationCode;
+
+  /// Authorization Expires (Date & Time)
+  final DateTime? authorizationExpires;
+
+  /// Authorization QR
+  /// URL to the QR code for the transaction (display to customer)
+  final String? authorizationQr;
+
+  InitResponse({
+    required this.redirectUrl,
+    required this.hasRedirect,
+    required this.pollUrl,
+    required this.error,
+    required this.success,
+    required this.hash,
+    required this.instructions,
+    required this.authorizationCode,
+    required this.authorizationExpires,
+    required this.authorizationQr,
+  });
 
   Map<String, dynamic> call() {
     Map<String, dynamic> data = {
@@ -41,7 +54,10 @@ class InitResponse {
       "error": this.error,
       "success": this.success,
       "hash": this.hash,
-      "instructions": this.instructions
+      "instructions": this.instructions,
+      "authorizationCode": this.authorizationCode,
+      "authorizationExpires": this.authorizationExpires,
+      "authorizationQr": this.authorizationQr,
     };
     // TODO:/// Refactor
     return data;
@@ -50,19 +66,29 @@ class InitResponse {
   /// Returns [InitResponse]
   static fromJson(Map<String, dynamic> data) {
     return InitResponse(
-        success: data['status'] != "error",
-        error: data['error'].toString().toLowerCase(),
-        hash: data['hash'],
-        hasRedirect: data['browserurl'] != null,
-        redirectUrl: data['browserurl']==null ? null : Paynow.notQuotePlus(data['browserurl'].toString()),
-        instructions: data['instructions'],
-        pollUrl: data['pollurl'] == null
-            ? ""
-            : Paynow.notQuotePlus(data['pollurl']));
+      success: data['status'] != "error",
+      error: data['error'].toString().toLowerCase(),
+      hash: data['hash'],
+      hasRedirect: data['browserurl'] != null,
+      redirectUrl: data['browserurl'] == null
+          ? null
+          : Paynow.notQuotePlus(data['browserurl'].toString()),
+      instructions: data['instructions'],
+      pollUrl:
+          data['pollurl'] == null ? "" : Paynow.notQuotePlus(data['pollurl']),
+      authorizationCode: data['authorizationcode'],
+      authorizationExpires: data['authorizationexpires'] == null
+          ? null
+          : Paynow.parseExpiration(
+              Paynow.notQuotePlus(data['authorizationexpires'])),
+      authorizationQr: data['authorizationqr'] == null
+          ? null
+          : Paynow.notQuotePlus(data['authorizationqr']),
+    );
   }
 
   @override
   String toString() {
-    return 'InitResponse(success: $success, instructions: $instructions, hasRedirect: $hasRedirect, hash: $hash, redirectUrl: $redirectUrl, error: $error, pollUrl: $pollUrl)';
+    return 'InitResponse(success: $success, instructions: $instructions, hasRedirect: $hasRedirect, hash: $hash, redirectUrl: $redirectUrl, error: $error, pollUrl: $pollUrl, authorizationCode: $authorizationCode, authorizationExpires: $authorizationExpires, authorizationQr: $authorizationQr)';
   }
 }

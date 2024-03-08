@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:localregex/localregex.dart';
 
-import '../payment_status_stream_manager/payment_status_stream_manager.dart';
-import '../models/models.dart' show InitResponse, Payment, StatusResponse, MobilePaymentMethod;
 import '../_routes.dart';
 import '../errors/errors.dart';
-
+import '../models/models.dart'
+    show InitResponse, Payment, StatusResponse, MobilePaymentMethod, Currency;
+import '../payment_status_stream_manager/payment_status_stream_manager.dart';
 
 /// Contains helper methods to interact with the Paynow API.
 ///
@@ -50,8 +52,29 @@ class Paynow {
   });
 
   /// Create Payment - Returns [Payment]
-  Payment createPayment(String reference, String authEmail) {
-    return Payment(reference: reference, authEmail: authEmail, items: {});
+  Payment createPayment(
+    String reference,
+    String authEmail, {
+    Currency currency = Currency.zwl,
+  }) {
+    return Payment(
+      reference: reference,
+      authEmail: authEmail,
+      items: {},
+      currency: currency,
+    );
+  }
+
+  bool _methodSupportsCurrency(MobilePaymentMethod method, Payment payment) {
+    final Map<MobilePaymentMethod, Currency> _methodCurrencyMap = {
+      MobilePaymentMethod.innbucks: Currency.usd,
+      MobilePaymentMethod.onemoney: Currency.zwl,
+      MobilePaymentMethod.paygo: Currency.zwl,
+      MobilePaymentMethod.ecocash: Currency.zwl,
+      MobilePaymentMethod.telecash: Currency.zwl,
+    };
+
+    return _methodCurrencyMap[method] == payment.currency;
   }
 
   Future<InitResponse> _init(Payment payment) async {
@@ -61,10 +84,8 @@ class Paynow {
 
     Map<String, dynamic> data = _build(payment);
 
-    var response =
-        await http.post(Uri.parse(PaynowUrlRoutes.URL_INITIATE_TRANSACTION), body: data);
-
-
+    var response = await http
+        .post(Uri.parse(PaynowUrlRoutes.URL_INITIATE_TRANSACTION), body: data);
 
     return InitResponse.fromJson(this._rebuildResponse(response.body));
   }
@@ -91,6 +112,17 @@ class Paynow {
         .replaceAll("%3d", "=");
   }
 
+  static DateTime? parseExpiration(String date) {
+    final dateFormat = DateFormat("d-MMM-yyyy+HH:mm");
+
+    try {
+      final DateTime dateTime = dateFormat.parse(date);
+      return dateTime;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Map<String, dynamic> _rebuildResponse(String qry) {
     List<String> q = qry.split("&");
     Map<String, dynamic> data = {};
@@ -107,7 +139,6 @@ class Paynow {
       "amount": payment.total,
       "id": this.integrationId,
       "additionalinfo": payment.info,
-
       "authemail": payment.authEmail,
       "status": "Message",
     };
@@ -137,8 +168,8 @@ class Paynow {
     String? pollUrl, {
     int streamInterval = 20,
   }) {
-    _statusStreamManager =
-        PaymentStatusStreamManager(this, pollUrl!, streamInterval: streamInterval);
+    _statusStreamManager = PaymentStatusStreamManager(this, pollUrl!,
+        streamInterval: streamInterval);
 
     return _statusStreamManager!.statusTransactionStream;
   }
@@ -178,9 +209,6 @@ class Paynow {
 
     Map<String, dynamic> data = await _buildMobile(payment, phone, method);
 
-
-
-
     final response = await http.post(
       Uri.parse(PaynowUrlRoutes.URL_INITIATE_MOBILE_TRANSACTION),
       body: data,
@@ -191,7 +219,8 @@ class Paynow {
 
   /// Build Mobile transaction request
   /// Returns [Map<String, dynamic>]
-  Future<Map<String, dynamic>> _buildMobile(Payment payment, String phone, String method) async {
+  Future<Map<String, dynamic>> _buildMobile(
+      Payment payment, String phone, String method) async {
     Map<String, dynamic> body = {
       'reference': payment.reference,
       "amount": payment.total,
@@ -208,7 +237,8 @@ class Paynow {
         // skip auth email
         // Triggers a bug
       } else {
-        body[paymentInfoElement] = _quotePlus(body[paymentInfoElement].toString());
+        body[paymentInfoElement] =
+            _quotePlus(body[paymentInfoElement].toString());
       }
     });
 
@@ -222,7 +252,6 @@ class Paynow {
 
     return body;
   }
-
 
   /// convert payment body to [String]
   String _stringify(Map<String, dynamic> body) {
@@ -254,13 +283,14 @@ class Paynow {
     String phone,
     MobilePaymentMethod method,
   ) {
-
-    if (
-      !(LocalRegex.isEconet(phone) ||
-      LocalRegex.isNetone(phone) ||
-      LocalRegex.isTelecel(phone))
-    ){
+    if (!(LocalRegex.isEconet(phone) ||
+        LocalRegex.isNetone(phone) ||
+        LocalRegex.isTelecel(phone))) {
       throw ValueError('Invalid Mobile Number');
+    }
+
+    if (!_methodSupportsCurrency(method, payment)) {
+      throw ValueError('Payment method does not support selected currency');
     }
 
     return this._initMobile(payment, phone, method.toRepresentation);
@@ -269,8 +299,12 @@ class Paynow {
   Future<InitResponse> send(Payment payment) {
     return this._init(payment);
   }
+
+  static String constructInnbucksDeepLink(String authorizationCode) {
+    return 'schinn.wbpycode://innbucks.co.zw?pymInnCode=$authorizationCode';
+  }
 }
 
-extension on MobilePaymentMethod{
+extension on MobilePaymentMethod {
   String get toRepresentation => this.toString().split('.').last;
 }
