@@ -1,3 +1,5 @@
+import 'package:paynow/models/currency.dart';
+
 import '_paynow_cart_item.dart';
 
 class Payment {
@@ -16,67 +18,73 @@ class Payment {
   /// The user's email address.
   final String authEmail;
 
+  /// Currency
+  /// [Currency]
+  /// Specifies the currency being used for this specific transaction
+  final Currency currency;
+
   Payment({
     required this.reference,
     required this.authEmail,
     required this.items,
+    this.currency = Currency.zwl,
   });
 
-  factory Payment.fromMap(data){
+  factory Payment.fromMap(data) {
     return Payment(
-      reference: data['reference'],
-      authEmail: data['authEmail'],
-      items: data['items']
-        .map((paynowCartItemData)
-          =>PaynowCartItem.fromMap(paynowCartItemData))
-    );
+        reference: data['reference'],
+        authEmail: data['authEmail'],
+        items: data['items'].map((paynowCartItemData) =>
+            PaynowCartItem.fromMap(paynowCartItemData)));
   }
 
   /// Clear all the items in the cart
-  void clearCart(){
+  void clearCart() {
     this.items.clear();
   }
 
   /// Delete Item from cart
-  void deleteCartItem(PaynowCartItem cartItem){
+  void deleteCartItem(PaynowCartItem cartItem) {
     this.items.remove(cartItem);
   }
 
   /// Adding [PaynowCartItems] to [Payment.items]
   /// [quantity]
-  void addToCart(PaynowCartItem cartItem, { int? quantity }) {
-    if (this.items.containsKey(cartItem)){
+  void addToCart(PaynowCartItem cartItem, {int? quantity}) {
+    if (this.items.containsKey(cartItem)) {
       /// then increment quantity by 1 if [quantity] is null
       this.items[cartItem] = this.items[cartItem]! + (quantity ?? 1);
-    }else{
+    } else {
       /// Add new item to cart with initial quantity of 1 if [quantity] is null
       this.items[cartItem] = quantity ?? 1;
     }
   }
 
   /// Remove [PaynowCartItem]s from [Payment.items]
-  void removeFromCart(PaynowCartItem cartItem, { int? quantity }) {
-    if (this.items.containsKey(cartItem)){
-
+  void removeFromCart(PaynowCartItem cartItem, {int? quantity}) {
+    if (this.items.containsKey(cartItem)) {
       /// then decreement quantity by 1 if [quantity] is null
       this.items[cartItem] = this.items[cartItem]! - (quantity ?? 1);
       // remove map if it has reached 0 or below
-      if (this.items[cartItem]! <= 0){
+      if (this.items[cartItem]! <= 0) {
         this.items.remove(cartItem);
       }
     }
-
   }
 
   /// Return Info of items in cart.
-  String get info => this.items.keys.fold<String>('', (previous, item)=>previous+item.title);
+  String get info => this
+      .items
+      .keys
+      .fold<String>('', (previous, item) => previous + item.title);
 
   /// Total amount of items in cart.
 
   double get total => this.items.entries.fold<double>(
-    0.0, (previous, item)
-      => double.parse(
-        (previous+item.key.amount * item.value).toStringAsExponential(2)
-      ) );
+      0.0,
+      (previous, item) => double.parse(
+          (previous + item.key.amount * item.value).toStringAsExponential(2)));
 
+  @override
+  String toString() => 'Total: ${currency.name} $total';
 }
