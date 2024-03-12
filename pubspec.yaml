@@ -1,7 +1,7 @@
 name: paynow
 
 description: Paynow Client helper package to help initiate payments.
-version: 3.0.2
+version: 4.0.0
 
 email: iamsupercode@outlook.com
 homepage: https://github.com/ignertic/paynow
@@ -12,9 +12,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.2
+  dio: ^5.4.1
+  http: ^1.2.1
+  pretty_dio_logger: 
   crypto: ^3.0.1
-  intl: ^0.18.1
+  intl: ^0.19.0
   localregex: '>=4.0.5'
 
 

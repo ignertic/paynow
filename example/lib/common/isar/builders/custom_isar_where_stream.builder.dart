@@ -7,15 +7,15 @@ import 'package:isar/isar.dart';
 
 class CustomIsarWhereStreamBuilder<T> extends StatefulWidget {
   const CustomIsarWhereStreamBuilder({
+    required this.collection,
     required this.queryBuilder,
     required this.onData,
     this.onError,
     this.onWaiting,
-    required this.collection,
   });
 
   final QueryBuilder<T, T, QWhere> Function(Isar isar) queryBuilder;
-  final IsarCollection<T> collection;
+  final IsarCollection<T> Function(Isar isar) collection;
   final Widget Function(List<T> data) onData;
   final Widget Function(Object error)? onError;
   final Widget Function()? onWaiting;
@@ -45,7 +45,8 @@ class CustomIsarWhereStreamBuilderState<T>
   }
 
   void _subscribeToChanges() {
-    _subscription = widget.collection.watchLazy().listen((_) async {
+    _subscription =
+        widget.collection.call(getIt<Isar>()).watchLazy().listen((_) async {
       final queryResult =
           await widget.queryBuilder.call((getIt<Isar>())).findAll();
       _streamController.add(queryResult);

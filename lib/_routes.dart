@@ -1,8 +1,6 @@
 class PaynowUrlRoutes {
-  static const String URL_INITIATE_TRANSACTION =
-      "https://www.paynow.co.zw/interface/initiatetransaction";
+  static const String URL_INITIATE_TRANSACTION = "/initiatetransaction";
 
   /// Transaction initation url (constant)
-  static const String URL_INITIATE_MOBILE_TRANSACTION =
-      "https://www.paynow.co.zw/interface/remotetransaction";
+  static const String URL_INITIATE_MOBILE_TRANSACTION = "/remotetransaction";
 }

@@ -30,21 +30,3 @@ abstract class BaseModel<T> {
     return hash;
   }
 }
-
-class Demo extends BaseModel<Demo> {
-  @override
-  Demo mapRemoteToLocal(Map<String, dynamic> data) {
-    return Demo();
-  }
-
-  @override
-  Map<String, dynamic> mapLocalToRemote() {
-    return {};
-  }
-
-  static Map<String, dynamic> getMetadata() {
-    return {
-      'collection': 'demos',
-    };
-  }
-}

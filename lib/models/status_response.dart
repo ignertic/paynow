@@ -32,7 +32,8 @@ class StatusResponse {
   /// Return [StatusResponse] from json.
   static fromJson(Map<String, dynamic> data) {
     return StatusResponse(
-      paid: data['status'] == "Paid",
+      paid:
+          (data['status'] == "Paid") | (data['status'] == "Awaiting+Delivery"),
       status: data['status'],
       amount: data['amount'],
       reference: data['reference'],

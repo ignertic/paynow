@@ -60,17 +60,25 @@ class CustomIsarFilterStreamBuilderState<T>
     return StreamBuilder<List<T>>(
       stream: _streamController.stream,
       builder: (context, snapshot) {
+        late Widget _widget;
         if (snapshot.hasData) {
-          return widget.onData(snapshot.data!);
+          _widget = widget.onData(snapshot.data!);
         } else if (snapshot.hasError) {
-          return Center(
+          _widget = Center(
             child: widget.onError?.call(snapshot.error!) ??
                 Text(snapshot.error.toString()),
           );
         } else {
-          return widget.onWaiting?.call() ??
+          _widget = widget.onWaiting?.call() ??
               const Center(child: CircularProgressIndicator());
         }
+
+        return AnimatedSwitcher(
+          duration: Duration(seconds: 2),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          child: _widget,
+        );
       },
     );
   }

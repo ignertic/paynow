@@ -1,7 +1,14 @@
-enum Currency {
-  usd('USD'),
-  zwl('ZWL');
+enum Currency { usd, zwl }
 
-  const Currency(this.name);
-  final String name;
+extension CurrencyExtension on Currency {
+  String get name {
+    switch (this) {
+      case Currency.usd:
+        return 'USD';
+      case Currency.zwl:
+        return 'ZWL';
+      default:
+        throw ArgumentError('Invalid currency: $this');
+    }
+  }
 }
