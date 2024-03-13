@@ -4,10 +4,6 @@ import 'package:uuid/uuid.dart';
 
 import 'common/injection/injection.dart';
 
-void handleLink(String link) {
-  // Do something with the link
-}
-
 void populateDummyProductsData() async {
   // wait for isar to be ready first
   await getIt.isReady<Isar>();

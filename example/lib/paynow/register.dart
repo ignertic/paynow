@@ -3,7 +3,7 @@ import 'package:paynow/paynow.dart';
 
 const String integrationId = '17190';
 const String integrationKey = 'fe360955-4a87-4648-b922-c65ed96f90ae';
-const String returnUrl = 'supercode://paynow.app/paynow/return/';
+const String returnUrl = 'supercode://paynow.app/paynow/return/<payment_id>';
 
 const String resultUrl = 'https://google.com/id';
 
