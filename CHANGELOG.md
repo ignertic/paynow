@@ -22,3 +22,6 @@
   - Using latest packages
   - Added Innbucks additional fields [by @iamngoni]
   - Ommited Members Listing Page
+## [4.0.1]
+  - Removed unnecessary comments
+  - Removed redundant code

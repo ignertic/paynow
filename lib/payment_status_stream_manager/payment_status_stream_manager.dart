@@ -6,9 +6,8 @@ import '../paynow.dart';
 /// stream payment status rather than waiting for delay
 class PaymentStatusStreamManager {
   PaymentStatusStreamManager(this._paynowObject, this._pollUrl,
-      {int streamInterval = 20}) {
+      {int streamInterval = 10}) {
     _startStream(streamInterval);
-    //statusTransactionStream.listen((statusResponse) => statusResponse);
   }
   final Paynow _paynowObject;
   final String _pollUrl;

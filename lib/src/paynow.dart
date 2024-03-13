@@ -47,25 +47,23 @@ class Paynow {
     ..options.baseUrl = "https://www.paynow.co.zw/interface"
     ..options.validateStatus = (status) {
       return (status ?? 500) < 500;
-    }
-    ..interceptors.add(PrettyDioLogger(requestHeader: true, requestBody: true));
+    };
 
   Paynow({
     required this.integrationId,
     required this.integrationKey,
     required this.returnUrl,
     required this.resultUrl,
-  });
-
-  // /// Setter for returnUrl
-  // void set returnUrl(String returnUrl) {
-  //   this.returnUrl = returnUrl;
-  // }
-
-  // /// Setter for resultUrl
-  // void set resultUrl(String resultUrl) {
-  //   this.resultUrl = resultUrl;
-  // }
+    bool enableLogging = true,
+  }) {
+    if (enableLogging) {
+      dio.interceptors.add(PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        error: true,
+      ));
+    }
+  }
 
   /// Create Payment - Returns [Payment]
   Payment createPayment(
@@ -78,18 +76,6 @@ class Paynow {
       authEmail: authEmail,
       items: {},
     );
-  }
-
-  bool _methodSupportsCurrency(MobilePaymentMethod method, Payment payment) {
-    final Map<MobilePaymentMethod, Currency> _methodCurrencyMap = {
-      MobilePaymentMethod.innbucks: Currency.usd,
-      MobilePaymentMethod.onemoney: Currency.zwl,
-      MobilePaymentMethod.paygo: Currency.zwl,
-      MobilePaymentMethod.ecocash: Currency.zwl,
-      MobilePaymentMethod.telecash: Currency.zwl,
-    };
-
-    return _methodCurrencyMap[method] == payment.currency;
   }
 
   Future<InitResponse> _init(Payment payment) async {

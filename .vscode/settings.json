@@ -1,5 +1,10 @@
 {
     "cSpell.words": [
-        "Paynow"
+        "authorizationcode",
+        "authorizationexpires",
+        "authorizationqr",
+        "browserurl",
+        "Paynow",
+        "pollurl"
     ]
 }
