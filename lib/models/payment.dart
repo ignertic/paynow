@@ -27,7 +27,7 @@ class Payment {
     required this.reference,
     required this.authEmail,
     required this.items,
-    this.currency = Currency.zwl,
+    this.currency = Currency.zig,
   });
 
   factory Payment.fromMap(data) {

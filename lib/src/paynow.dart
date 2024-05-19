@@ -70,7 +70,7 @@ class Paynow {
   Payment createPayment(
     String reference,
     String authEmail, {
-    Currency currency = Currency.zwl,
+    Currency currency = Currency.zig,
   }) {
     return Payment(
       reference: reference,
