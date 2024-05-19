@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 
+import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:localregex/localregex.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
 import '../_routes.dart';
 import '../errors/errors.dart';
 import '../models/models.dart'
@@ -25,7 +26,7 @@ import 'hash.dart';
 ///   returnUrl :  Merchant's return url.
 ///   resultUrl:  Merchant's result url.
 class Paynow {
-  /// Transaction initation url (constant).
+  /// Transaction initiation url (constant).
 
   ///  Merchant's integration Id.
   String integrationId;
