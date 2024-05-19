@@ -4,7 +4,7 @@ class InitResponse {
   /// Boolean indicating whether initiate request was successful or not.
   final bool? success;
 
-  /// Instruction for transcation status.
+  /// Instruction for transaction status.
   final String? instructions;
 
   /// Boolean indicating whether the response contains a url to redirect to
@@ -59,7 +59,7 @@ class InitResponse {
       "authorizationExpires": this.authorizationExpires,
       "authorizationQr": this.authorizationQr,
     };
-    // TODO:/// Refactor
+
     return data;
   }
 

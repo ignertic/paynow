@@ -1,16 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
+import 'package:dio/dio.dart';
 
-import 'package:crypto/crypto.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:localregex/localregex.dart';
-
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../_routes.dart';
 import '../errors/errors.dart';
 import '../models/models.dart'
     show InitResponse, Payment, StatusResponse, MobilePaymentMethod, Currency;
 import '../payment_status_stream_manager/payment_status_stream_manager.dart';
+import 'hash.dart';
 
 /// Contains helper methods to interact with the Paynow API.
 ///
@@ -29,27 +28,42 @@ class Paynow {
   /// Transaction initation url (constant).
 
   ///  Merchant's integration Id.
-  String? integrationId;
+  String integrationId;
 
   /// Merchant's Key.
-  String? integrationKey;
+  String integrationKey;
 
   /// Merchant Return Url.
-  String? returnUrl;
+  String returnUrl;
 
   ///  Merchant's Result Url.
-  String? resultUrl;
+  String resultUrl;
 
   /// internal payment status stream manager
   PaymentStatusStreamManager? _statusStreamManager;
 
-  ///
+  /// Dio
+  Dio dio = Dio()
+    ..options.baseUrl = "https://www.paynow.co.zw/interface"
+    ..options.validateStatus = (status) {
+      return (status ?? 500) < 500;
+    };
+
   Paynow({
     required this.integrationId,
     required this.integrationKey,
     required this.returnUrl,
     required this.resultUrl,
-  });
+    bool enableLogging = true,
+  }) {
+    if (enableLogging) {
+      dio.interceptors.add(PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        error: true,
+      ));
+    }
+  }
 
   /// Create Payment - Returns [Payment]
   Payment createPayment(
@@ -61,20 +75,7 @@ class Paynow {
       reference: reference,
       authEmail: authEmail,
       items: {},
-      currency: currency,
     );
-  }
-
-  bool _methodSupportsCurrency(MobilePaymentMethod method, Payment payment) {
-    final Map<MobilePaymentMethod, Currency> _methodCurrencyMap = {
-      MobilePaymentMethod.innbucks: Currency.usd,
-      MobilePaymentMethod.onemoney: Currency.zwl,
-      MobilePaymentMethod.paygo: Currency.zwl,
-      MobilePaymentMethod.ecocash: Currency.zwl,
-      MobilePaymentMethod.telecash: Currency.zwl,
-    };
-
-    return _methodCurrencyMap[method] == payment.currency;
   }
 
   Future<InitResponse> _init(Payment payment) async {
@@ -84,21 +85,14 @@ class Paynow {
 
     Map<String, dynamic> data = _build(payment);
 
-    var response = await http
-        .post(Uri.parse(PaynowUrlRoutes.URL_INITIATE_TRANSACTION), body: data);
+    final response = await dio.post(PaynowUrlRoutes.URL_INITIATE_TRANSACTION,
+        data: FormData.fromMap(data),
+        options: Options(headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        }));
 
-    return InitResponse.fromJson(this._rebuildResponse(response.body));
-  }
-
-  String _quotePlus(String value) {
-    try {
-      return value
-          .replaceAll(":", "%3A")
-          .replaceAll("/", "%2F")
-          .replaceAll("@", "%40");
-    } catch (e) {
-      return "";
-    }
+    return InitResponse.fromJson(this._rebuildResponse(response.data));
   }
 
   static String notQuotePlus(String value) {
@@ -123,40 +117,35 @@ class Paynow {
     }
   }
 
-  Map<String, dynamic> _rebuildResponse(String qry) {
-    List<String> q = qry.split("&");
+  Map<String, dynamic> _rebuildResponse(String query) {
+    List<String> querySlices = query.split("&");
     Map<String, dynamic> data = {};
-    for (int i = 0; i < q.length; i++) {
-      List<String> imports = q[i].split("=");
+    for (int index = 0; index < querySlices.length; index++) {
+      List<String> imports = querySlices[index].split("=");
       data[imports[0]] = imports[1];
     }
     return data;
   }
 
   Map<String, dynamic> _build(Payment payment) {
-    Map<String, dynamic> body = {
+    Map<String, dynamic> requestBody = {
+      "id": this.integrationId,
       "reference": payment.reference,
       "amount": payment.total,
-      "id": this.integrationId,
-      "additionalinfo": payment.info,
       "authemail": payment.authEmail,
-      "status": "Message",
+      "additionalinfo": payment.info,
     };
 
-    body.keys.forEach((f) {
-      String _p = _quotePlus(body[f].toString());
-      body[f] = _p;
-    });
-
     // send urls as is
-    body['resulturl'] = this.resultUrl;
-    body['returnurl'] = this.returnUrl;
+    requestBody['returnurl'] = this.returnUrl;
+    requestBody['resulturl'] = this.resultUrl;
+    requestBody['status'] = 'Message';
 
-    String out = _stringify(body);
+    String payloadForHashString = _stringify(requestBody);
+    String transactionHash = generatePaynowHash(payloadForHashString);
 
-    body['hash'] = _generateHash(out);
-
-    return body;
+    requestBody['hash'] = transactionHash;
+    return requestBody;
   }
 
   /// Stream Transaction Status,
@@ -185,15 +174,15 @@ class Paynow {
   ///
   /// Returns [StatusResponse]
   Future<StatusResponse> checkTransactionStatus(String? pollUrl) async {
-    var response = await http.post(
-      Uri.parse(pollUrl!
+    var response = await dio.post(
+      pollUrl!
           .replaceAll("%3a", ":")
           .replaceAll("%2f", "/")
           .replaceAll("%3d", "=")
-          .replaceAll("%3f", "?")),
+          .replaceAll("%3f", "?"),
     );
 
-    return StatusResponse.fromJson(this._rebuildResponse(response.body));
+    return StatusResponse.fromJson(this._rebuildResponse(response.data));
   }
 
   /// Send  mobile payment request to Paynow
@@ -209,12 +198,15 @@ class Paynow {
 
     Map<String, dynamic> data = await _buildMobile(payment, phone, method);
 
-    final response = await http.post(
-      Uri.parse(PaynowUrlRoutes.URL_INITIATE_MOBILE_TRANSACTION),
-      body: data,
-    );
+    final response =
+        await dio.post(PaynowUrlRoutes.URL_INITIATE_MOBILE_TRANSACTION,
+            data: FormData.fromMap(data),
+            options: Options(headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
+            }));
 
-    return InitResponse.fromJson(this._rebuildResponse(response.body));
+    return InitResponse.fromJson(this._rebuildResponse(response.data));
   }
 
   /// Build Mobile transaction request
@@ -222,25 +214,15 @@ class Paynow {
   Future<Map<String, dynamic>> _buildMobile(
       Payment payment, String phone, String method) async {
     Map<String, dynamic> body = {
+      "method": method,
+      "phone": phone,
+      "authemail": payment.authEmail,
       'reference': payment.reference,
-      "amount": payment.total,
+      "amount": payment.total.toString(),
       "id": this.integrationId,
       "additionalinfo": payment.info,
-      "authemail": payment.authEmail,
       "status": "Message",
-      "phone": phone,
-      "method": method,
     };
-
-    body.keys.forEach((paymentInfoElement) {
-      if (paymentInfoElement == "authemail") {
-        // skip auth email
-        // Triggers a bug
-      } else {
-        body[paymentInfoElement] =
-            _quotePlus(body[paymentInfoElement].toString());
-      }
-    });
 
     // send urls as is
     body['resulturl'] = this.resultUrl;
@@ -248,33 +230,22 @@ class Paynow {
 
     String out = _stringify(body);
 
-    body["hash"] = _generateHash(out); //await __hash(body);
+    body["hash"] = generatePaynowHash(out);
 
     return body;
   }
 
   /// convert payment body to [String]
   String _stringify(Map<String, dynamic> body) {
-    String out = "";
+    List values = body.values.toList();
 
-    List<String> values = body.keys.toList();
+    String outputString = values.fold("", (previousValue, element) {
+      return previousValue + element.toString();
+    });
 
-    for (int i = 0; i < values.length; i++) {
-      if (values[i] != "hash") {
-        out += body[values[i]];
-      }
-    }
+    outputString += this.integrationKey;
 
-    out += this.integrationKey!;
-
-    return out;
-  }
-
-  /// generate secure hash for the payment request
-  String _generateHash(String string) {
-    String _hash = sha512.convert(utf8.encode(string)).toString().toUpperCase();
-
-    return _hash;
+    return outputString;
   }
 
   /// Initiate mobile transactions
@@ -287,10 +258,6 @@ class Paynow {
         LocalRegex.isNetone(phone) ||
         LocalRegex.isTelecel(phone))) {
       throw ValueError('Invalid Mobile Number');
-    }
-
-    if (!_methodSupportsCurrency(method, payment)) {
-      throw ValueError('Payment method does not support selected currency');
     }
 
     return this._initMobile(payment, phone, method.toRepresentation);

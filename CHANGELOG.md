@@ -14,3 +14,14 @@
   - Added Payment.clear method to clear cart
   - Added Payment.deleteCartItem to remove item from cart
   - Added Payment.cartItems to list all items in the cart
+## [4.0.0]
+  - Replace http package with dio
+  - Added a logger
+  - Fixed Invalid Id issue
+  - New Example
+  - Using latest packages
+  - Added Innbucks additional fields [by @iamngoni]
+  - Ommited Members Listing Page
+## [4.0.1]
+  - Removed unnecessary comments
+  - Removed redundant code
