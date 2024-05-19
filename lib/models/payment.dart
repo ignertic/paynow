@@ -81,9 +81,7 @@ class Payment {
   /// Total amount of items in cart.
 
   double get total => this.items.entries.fold<double>(
-      0.0,
-      (previous, item) => double.parse(
-          (previous + item.key.amount * item.value).toStringAsExponential(2)));
+      0.0, (previous, item) => previous + item.key.amount * item.value);
 
   @override
   String toString() => 'Total: ${currency.name} $total';
