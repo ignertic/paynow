@@ -7,6 +7,7 @@ import 'common/injection/injection.dart';
 import 'common/navigation/navigation.dart';
 import 'initializers.dart';
 
+// ignore: unused_element
 late StreamSubscription _sub;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
