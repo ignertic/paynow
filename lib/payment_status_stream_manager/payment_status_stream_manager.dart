@@ -1,6 +1,5 @@
 import 'dart:async';
 
-// import 'package:paynow/paynow.dart';
 import '../paynow.dart';
 
 /// stream payment status rather than waiting for delay
