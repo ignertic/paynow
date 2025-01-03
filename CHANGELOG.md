@@ -25,3 +25,6 @@
 ## [4.0.1]
   - Removed unnecessary comments
   - Removed redundant code
+## [4.2.0]
+  - Address broken return url example
+  - Refactor UI in example

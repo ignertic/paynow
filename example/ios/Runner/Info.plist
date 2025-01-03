@@ -54,7 +54,7 @@
 		<string>paynow.app</string>
 		<key>CFBundleURLSchemes</key>
 		<array>
-			<string>supercode</string>
+			<string>https</string>
 		</array>
 		</dict>
 	</array>

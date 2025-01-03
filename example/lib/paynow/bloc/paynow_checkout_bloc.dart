@@ -3,7 +3,6 @@ import 'package:example/cart_items/cart_item.model.dart';
 import 'package:example/common/component/base_bloc.dart';
 import 'package:example/common/injection/injection.dart';
 import 'package:example/payments/payment.model.dart';
-import 'package:flutter/material.dart';
 import 'package:paynow/paynow.dart' hide Payment;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
@@ -29,8 +28,9 @@ class PaynowCheckoutBloc
     final createdPayment = await paymentsRepository.create(payment);
 
     final paynow = getIt<Paynow>();
-    final paynowPayment =
-        paynow.createPayment('Flutter ZW', 'gish@petalmafrica.com');
+    final paynowPayment = paynow.createPayment(
+        'Flutter ZW', 'gishobertgwenzi@outlook.com',
+        currency: Currency.usd);
 
     for (final cartItem in cartItems) {
       paynowPayment.addToCart(

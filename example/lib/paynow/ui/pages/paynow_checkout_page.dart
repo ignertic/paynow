@@ -1,15 +1,9 @@
 import 'package:example/cart_items/cart_item.model.dart';
-import 'package:example/common/component/base_bloc.dart';
 import 'package:example/common/extensions/extensions.dart';
-import 'package:example/common/injection/injection.dart';
 import 'package:example/common/isar/builders/custom_isar_filter_stream.builder.dart';
-import 'package:example/payments/payment.model.dart';
 import 'package:example/paynow/bloc/paynow_checkout_bloc.dart';
 import 'package:example/products/product.model.dart';
 import 'package:flutter/material.dart';
-import 'package:paynow/paynow.dart' hide Payment;
-import 'package:url_launcher/url_launcher.dart';
-import 'package:uuid/uuid.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PaynowCheckoutPage extends StatelessWidget {
